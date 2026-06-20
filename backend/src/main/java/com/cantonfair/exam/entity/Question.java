@@ -1,0 +1,40 @@
+package com.cantonfair.exam.entity;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+/**
+ * 题库实体类
+ */
+@Data
+public class Question implements Serializable {
+    private Long id;
+    private Long courseId;
+    private String courseName;
+    private Long typeId;
+    private String typeName;
+    private Long teacherId;
+    private String teacherName;
+    private String title;
+    private String optionA;
+    private String optionB;
+    private String optionC;
+    private String optionD;
+    private String optionE;
+    private String optionF;
+    private String answer;
+    private String analysis;
+    private BigDecimal score;
+    private Integer difficulty;
+    private Integer status;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
+}
