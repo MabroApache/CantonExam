@@ -5,21 +5,9 @@
         <span>在线考试</span>
       </template>
       
-      <!-- 搜索表单 -->
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="课程名称">
-          <el-input v-model="searchForm.courseName" placeholder="请输入课程名称" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-      
       <!-- 考试列表 -->
       <el-table :data="examList" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="考试名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="teacherName" label="教师" width="120" />
         <el-table-column prop="startTime" label="开始时间" width="180" />
         <el-table-column prop="endTime" label="结束时间" width="180" />
@@ -60,10 +48,6 @@ const loading = ref(false)
 const examList = ref([])
 const examRecords = ref([])
 
-const searchForm = ref({
-  courseName: ''
-})
-
 onMounted(async () => {
   loadExamList()
   loadExamRecords()
@@ -92,16 +76,6 @@ const hasExamRecord = (examId) => {
   return examRecords.value.some(record => record.examId === examId)
 }
 
-const handleSearch = () => {
-  if (searchForm.value.courseName) {
-    examList.value = examList.value.filter(exam => 
-      exam.courseName.includes(searchForm.value.courseName)
-    )
-  } else {
-    loadExamList()
-  }
-}
-
 // 根据当前时间计算考试状态
 const getCurrentStatus = (row) => {
   const now = new Date()
@@ -125,11 +99,6 @@ const getStatusText = (row) => {
 const getStatusType = (row) => {
   const status = getCurrentStatus(row)
   return status === 0 ? 'info' : status === 1 ? 'success' : 'danger'
-}
-
-const handleReset = () => {
-  searchForm.value.courseName = ''
-  loadExamList()
 }
 
 const handleEnterExam = (exam) => {

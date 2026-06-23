@@ -86,6 +86,11 @@ public class ExamRecordService {
             answer.setQuestionId(pq.getQuestionId());
             answer.setTypeId(question.getTypeId());
             answer.setTypeName(question.getTypeName());
+            answer.setTitle(question.getTitle());
+            answer.setOptionA(question.getOptionA());
+            answer.setOptionB(question.getOptionB());
+            answer.setOptionC(question.getOptionC());
+            answer.setOptionD(question.getOptionD());
             answer.setCorrectAnswer(question.getAnswer());
             answer.setScore(pq.getScore());
             answer.setGetScore(BigDecimal.ZERO);
@@ -119,28 +124,34 @@ public class ExamRecordService {
         }
         
         // 更新学生答案
-        BigDecimal objectiveScore = BigDecimal.ZERO; // 客观题得分
-        BigDecimal subjectiveScore = BigDecimal.ZERO; // 主观题得分
+        BigDecimal objectiveScore = BigDecimal.ZERO;
+        BigDecimal subjectiveScore = BigDecimal.ZERO;
         
         for (StudentAnswer answer : answers) {
-            // 获取已有的学生答案记录
             StudentAnswer existingAnswer = answerMap.get(answer.getQuestionId());
             if (existingAnswer == null) {
-                continue; // 找不到对应的答案记录，跳过
+                continue;
             }
             
             Question question = questionMapper.selectById(answer.getQuestionId());
             if (question == null) {
-                continue; // 找不到题目，跳过
+                continue;
             }
             
-            // 设置学生答案
             existingAnswer.setStudentAnswer(answer.getStudentAnswer());
             
-            // 自动阅卷客观题
             String typeName = question.getTypeName();
-            if ("单选题".equals(typeName) || "判断题".equals(typeName)) {
-                // 单选题和判断题：完全匹配
+            if ("单选题".equals(typeName)) {
+                if (existingAnswer.getStudentAnswer() != null && 
+                    existingAnswer.getStudentAnswer().equals(question.getAnswer())) {
+                    existingAnswer.setGetScore(existingAnswer.getScore());
+                    existingAnswer.setIsCorrect(1);
+                    objectiveScore = objectiveScore.add(existingAnswer.getScore());
+                } else {
+                    existingAnswer.setGetScore(BigDecimal.ZERO);
+                    existingAnswer.setIsCorrect(0);
+                }
+            } else if ("判断题".equals(typeName)) {
                 if (existingAnswer.getStudentAnswer() != null && 
                     existingAnswer.getStudentAnswer().equals(question.getAnswer())) {
                     existingAnswer.setGetScore(existingAnswer.getScore());
@@ -151,40 +162,54 @@ public class ExamRecordService {
                     existingAnswer.setIsCorrect(0);
                 }
             } else if ("多选题".equals(typeName)) {
-                // 多选题：答案完全匹配才得分
-                if (existingAnswer.getStudentAnswer() != null && 
-                    existingAnswer.getStudentAnswer().equals(question.getAnswer())) {
+                String studentAns = existingAnswer.getStudentAnswer();
+                String correctAns = question.getAnswer();
+                
+                if (studentAns != null && studentAns.equals(correctAns)) {
                     existingAnswer.setGetScore(existingAnswer.getScore());
                     existingAnswer.setIsCorrect(1);
                     objectiveScore = objectiveScore.add(existingAnswer.getScore());
+                } else if (studentAns != null && !studentAns.isEmpty()) {
+                    int correctCount = 0;
+                    int totalCorrectCount = correctAns.length();
+                    
+                    for (char c : studentAns.toCharArray()) {
+                        if (correctAns.indexOf(c) >= 0) {
+                            correctCount++;
+                        }
+                    }
+                    
+                    if (correctCount > 0) {
+                        BigDecimal halfScore = existingAnswer.getScore().divide(BigDecimal.valueOf(2), 2, BigDecimal.ROUND_HALF_UP);
+                        existingAnswer.setGetScore(halfScore);
+                        existingAnswer.setIsCorrect(2);
+                        objectiveScore = objectiveScore.add(halfScore);
+                    } else {
+                        existingAnswer.setGetScore(BigDecimal.ZERO);
+                        existingAnswer.setIsCorrect(0);
+                    }
                 } else {
                     existingAnswer.setGetScore(BigDecimal.ZERO);
                     existingAnswer.setIsCorrect(0);
                 }
             } else if ("填空题".equals(typeName)) {
-                // 填空题：答案匹配得分（可以支持多个答案）
-                if (existingAnswer.getStudentAnswer() != null && 
-                    existingAnswer.getStudentAnswer().trim().equals(question.getAnswer().trim())) {
-                    existingAnswer.setGetScore(existingAnswer.getScore());
-                    existingAnswer.setIsCorrect(1);
-                    objectiveScore = objectiveScore.add(existingAnswer.getScore());
-                } else {
-                    existingAnswer.setGetScore(BigDecimal.ZERO);
-                    existingAnswer.setIsCorrect(0);
-                }
-            } else {
-                // 简答题：主观题，需要手动阅卷
                 existingAnswer.setGetScore(BigDecimal.ZERO);
                 existingAnswer.setIsCorrect(0);
+                subjectiveScore = subjectiveScore.add(existingAnswer.getScore());
+            } else if ("简答题".equals(typeName)) {
+                existingAnswer.setGetScore(BigDecimal.ZERO);
+                existingAnswer.setIsCorrect(0);
+                subjectiveScore = subjectiveScore.add(existingAnswer.getScore());
             }
             
             studentAnswerMapper.update(existingAnswer);
         }
         
-        // 更新考试记录
         record.setSubmitTime(LocalDateTime.now());
         record.setObjectiveScore(objectiveScore);
-        record.setStatus(1); // 已提交
+        record.setSubjectiveScore(subjectiveScore);
+        record.setTotalScore(objectiveScore.add(subjectiveScore));
+        record.setStatus(1);
         examRecordMapper.update(record);
     }
 
@@ -198,32 +223,51 @@ public class ExamRecordService {
             throw new RuntimeException("考试记录不存在");
         }
         
+        BigDecimal objectiveScore = BigDecimal.ZERO;
         BigDecimal subjectiveScore = BigDecimal.ZERO;
         
         for (StudentAnswer answer : answers) {
-            studentAnswerMapper.update(answer);
-            subjectiveScore = subjectiveScore.add(answer.getGetScore());
+            StudentAnswer existingAnswer = studentAnswerMapper.selectById(answer.getId());
+            if (existingAnswer != null) {
+                existingAnswer.setGetScore(answer.getGetScore());
+                existingAnswer.setComment(answer.getComment());
+                studentAnswerMapper.update(existingAnswer);
+                
+                String typeName = existingAnswer.getTypeName();
+                if ("填空题".equals(typeName) || "简答题".equals(typeName)) {
+                    subjectiveScore = subjectiveScore.add(existingAnswer.getGetScore());
+                } else {
+                    objectiveScore = objectiveScore.add(existingAnswer.getGetScore());
+                }
+            }
         }
         
-        // 计算总分
-        BigDecimal totalScore = record.getObjectiveScore().add(subjectiveScore);
+        BigDecimal totalScore = objectiveScore.add(subjectiveScore);
         
+        record.setObjectiveScore(objectiveScore);
         record.setSubjectiveScore(subjectiveScore);
         record.setTotalScore(totalScore);
-        record.setStatus(2); // 已批改
+        record.setStatus(2);
         examRecordMapper.update(record);
         
-        // 创建成绩记录
-        Score score = new Score();
-        score.setExamId(record.getExamId());
-        score.setPaperId(record.getPaperId());
-        score.setStudentId(record.getStudentId());
-        score.setStudentName(record.getStudentName());
-        score.setTotalScore(totalScore);
-        score.setObjectiveScore(record.getObjectiveScore());
-        score.setSubjectiveScore(subjectiveScore);
-        score.setSubmitTime(record.getSubmitTime());
-        scoreMapper.insert(score);
+        Score existingScore = scoreMapper.selectByExamAndStudent(record.getExamId(), record.getStudentId());
+        if (existingScore != null) {
+            existingScore.setTotalScore(totalScore);
+            existingScore.setObjectiveScore(objectiveScore);
+            existingScore.setSubjectiveScore(subjectiveScore);
+            scoreMapper.update(existingScore);
+        } else {
+            Score score = new Score();
+            score.setExamId(record.getExamId());
+            score.setPaperId(record.getPaperId());
+            score.setStudentId(record.getStudentId());
+            score.setStudentName(record.getStudentName());
+            score.setTotalScore(totalScore);
+            score.setObjectiveScore(objectiveScore);
+            score.setSubjectiveScore(subjectiveScore);
+            score.setSubmitTime(record.getSubmitTime());
+            scoreMapper.insert(score);
+        }
     }
 
     /**

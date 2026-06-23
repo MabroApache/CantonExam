@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * 题库Service
- */
 @Service
 public class QuestionService {
 
@@ -28,10 +25,6 @@ public class QuestionService {
         return questionMapper.selectByCondition(question);
     }
 
-    public List<Question> getByCourseId(Long courseId) {
-        return questionMapper.selectByCourseId(courseId);
-    }
-
     public List<Question> getByTypeId(Long typeId) {
         return questionMapper.selectByTypeId(typeId);
     }
@@ -40,11 +33,8 @@ public class QuestionService {
         return questionMapper.selectByTeacherId(teacherId);
     }
 
-    /**
-     * 随机抽取题目（用于自动组卷）
-     */
-    public List<Question> getRandomQuestions(Long courseId, Long typeId, Integer count) {
-        return questionMapper.selectRandomQuestions(courseId, typeId, count);
+    public List<Question> getRandomQuestions(Long typeId, Integer count) {
+        return questionMapper.selectRandomQuestions(typeId, count);
     }
 
     public void add(Question question) {

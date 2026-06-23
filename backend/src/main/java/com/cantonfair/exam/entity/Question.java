@@ -7,14 +7,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 题库实体类
- */
 @Data
 public class Question implements Serializable {
     private Long id;
-    private Long courseId;
-    private String courseName;
     private Long typeId;
     private String typeName;
     private Long teacherId;
@@ -24,8 +19,6 @@ public class Question implements Serializable {
     private String optionB;
     private String optionC;
     private String optionD;
-    private String optionE;
-    private String optionF;
     private String answer;
     private String analysis;
     private BigDecimal score;

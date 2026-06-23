@@ -7,15 +7,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 试卷实体类
- */
 @Data
 public class Paper implements Serializable {
     private Long id;
     private String name;
-    private Long courseId;
-    private String courseName;
     private Long teacherId;
     private String teacherName;
     private BigDecimal totalScore;

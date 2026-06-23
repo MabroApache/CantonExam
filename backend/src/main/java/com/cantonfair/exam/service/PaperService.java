@@ -14,9 +14,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 试卷Service
- */
 @Service
 public class PaperService {
 
@@ -45,19 +42,12 @@ public class PaperService {
         return paperMapper.selectByTeacherId(teacherId);
     }
 
-    /**
-     * 新增试卷（管理员）
-     */
     public void add(Paper paper) {
         paperMapper.insert(paper);
     }
 
-    /**
-     * 手动组卷
-     */
     @Transactional
     public void manualCreatePaper(Paper paper, List<Long> questionIds) {
-        // 计算总分
         BigDecimal totalScore = BigDecimal.ZERO;
         int singleCount = 0, multiCount = 0, judgeCount = 0, fillCount = 0, essayCount = 0;
         
@@ -74,7 +64,6 @@ public class PaperService {
                 
                 totalScore = totalScore.add(question.getScore());
                 
-                // 统计题型数量
                 String typeName = question.getTypeName();
                 if ("单选题".equals(typeName)) singleCount++;
                 else if ("多选题".equals(typeName)) multiCount++;
@@ -90,21 +79,16 @@ public class PaperService {
         paper.setJudgeCount(judgeCount);
         paper.setFillCount(fillCount);
         paper.setEssayCount(essayCount);
-        paper.setStatus(0); // 草稿状态
+        paper.setStatus(0);
         
-        // 先插入试卷，获取ID
         paperMapper.insert(paper);
         
-        // 再设置paperId并插入试卷题目
         for (PaperQuestion pq : paperQuestions) {
             pq.setPaperId(paper.getId());
         }
         paperQuestionMapper.insertBatch(paperQuestions);
     }
 
-    /**
-     * 自动组卷
-     */
     @Transactional
     public void autoCreatePaper(Paper paper, int singleCount, int multiCount, int judgeCount, 
                                 int fillCount, int essayCount, BigDecimal singleScore, 
@@ -114,16 +98,14 @@ public class PaperService {
         BigDecimal totalScore = BigDecimal.ZERO;
         int sort = 1;
         
-        // 获取题型ID
-        Long singleTypeId = 1L; // 单选题
-        Long multiTypeId = 2L; // 多选题
-        Long judgeTypeId = 3L; // 判断题
-        Long fillTypeId = 4L; // 填空题
-        Long essayTypeId = 5L; // 简答题
+        Long singleTypeId = 1L;
+        Long multiTypeId = 2L;
+        Long judgeTypeId = 3L;
+        Long fillTypeId = 4L;
+        Long essayTypeId = 5L;
         
-        // 随机抽取单选题
         if (singleCount > 0) {
-            List<Question> questions = questionMapper.selectRandomQuestions(paper.getCourseId(), singleTypeId, singleCount);
+            List<Question> questions = questionMapper.selectRandomQuestions(singleTypeId, singleCount);
             for (Question question : questions) {
                 PaperQuestion pq = new PaperQuestion();
                 pq.setQuestionId(question.getId());
@@ -134,9 +116,8 @@ public class PaperService {
             }
         }
         
-        // 随机抽取多选题
         if (multiCount > 0) {
-            List<Question> questions = questionMapper.selectRandomQuestions(paper.getCourseId(), multiTypeId, multiCount);
+            List<Question> questions = questionMapper.selectRandomQuestions(multiTypeId, multiCount);
             for (Question question : questions) {
                 PaperQuestion pq = new PaperQuestion();
                 pq.setQuestionId(question.getId());
@@ -147,9 +128,8 @@ public class PaperService {
             }
         }
         
-        // 随机抽取判断题
         if (judgeCount > 0) {
-            List<Question> questions = questionMapper.selectRandomQuestions(paper.getCourseId(), judgeTypeId, judgeCount);
+            List<Question> questions = questionMapper.selectRandomQuestions(judgeTypeId, judgeCount);
             for (Question question : questions) {
                 PaperQuestion pq = new PaperQuestion();
                 pq.setQuestionId(question.getId());
@@ -160,9 +140,8 @@ public class PaperService {
             }
         }
         
-        // 随机抽取填空题
         if (fillCount > 0) {
-            List<Question> questions = questionMapper.selectRandomQuestions(paper.getCourseId(), fillTypeId, fillCount);
+            List<Question> questions = questionMapper.selectRandomQuestions(fillTypeId, fillCount);
             for (Question question : questions) {
                 PaperQuestion pq = new PaperQuestion();
                 pq.setQuestionId(question.getId());
@@ -173,9 +152,8 @@ public class PaperService {
             }
         }
         
-        // 随机抽取简答题
         if (essayCount > 0) {
-            List<Question> questions = questionMapper.selectRandomQuestions(paper.getCourseId(), essayTypeId, essayCount);
+            List<Question> questions = questionMapper.selectRandomQuestions(essayTypeId, essayCount);
             for (Question question : questions) {
                 PaperQuestion pq = new PaperQuestion();
                 pq.setQuestionId(question.getId());
@@ -194,23 +172,17 @@ public class PaperService {
         paper.setEssayCount(essayCount);
         paper.setStatus(0);
         
-        // 先插入试卷，获取ID
         paperMapper.insert(paper);
         
-        // 再设置paperId并插入试卷题目
         for (PaperQuestion pq : paperQuestions) {
             pq.setPaperId(paper.getId());
         }
         paperQuestionMapper.insertBatch(paperQuestions);
     }
 
-    /**
-     * 获取试卷题目列表（包含题目类型信息）
-     */
     public List<PaperQuestion> getPaperQuestions(Long paperId) {
         List<PaperQuestion> paperQuestions = paperQuestionMapper.selectByPaperId(paperId);
         
-        // 为每个题目添加类型信息
         for (PaperQuestion pq : paperQuestions) {
             Question question = questionMapper.selectById(pq.getQuestionId());
             if (question != null) {

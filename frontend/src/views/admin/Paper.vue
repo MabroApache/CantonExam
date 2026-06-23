@@ -13,11 +13,6 @@
         <el-form-item label="试卷名称">
           <el-input v-model="searchForm.name" placeholder="请输入试卷名称" clearable />
         </el-form-item>
-        <el-form-item label="课程">
-          <el-select v-model="searchForm.courseId" placeholder="请选择课程" clearable>
-            <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -27,7 +22,6 @@
       <!-- 试卷列表 -->
       <el-table :data="paperList" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="试卷名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="totalScore" label="总分" width="80" />
         <el-table-column prop="questionCount" label="题目数量" width="100" />
         <el-table-column prop="duration" label="考试时长(分钟)" width="120" />
@@ -60,11 +54,6 @@
         <el-form-item label="试卷名称" prop="name">
           <el-input v-model="paperForm.name" placeholder="请输入试卷名称" />
         </el-form-item>
-        <el-form-item label="课程" prop="courseId">
-          <el-select v-model="paperForm.courseId" placeholder="请选择课程" style="width: 100%">
-            <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="考试时长" prop="duration">
           <el-input-number v-model="paperForm.duration" :min="1" :max="300" />
           <span style="margin-left: 10px">分钟</span>
@@ -87,7 +76,6 @@
     <el-dialog title="试卷详情" v-model="viewDialogVisible" width="800px">
       <el-descriptions :column="2" border>
         <el-descriptions-item label="试卷名称">{{ viewPaper.name }}</el-descriptions-item>
-        <el-descriptions-item label="课程">{{ viewPaper.courseName }}</el-descriptions-item>
         <el-descriptions-item label="总分">{{ viewPaper.totalScore }}分</el-descriptions-item>
         <el-descriptions-item label="考试时长">{{ viewPaper.duration }}分钟</el-descriptions-item>
         <el-descriptions-item label="试卷说明" :span="2">{{ viewPaper.description || '无' }}</el-descriptions-item>
@@ -123,18 +111,15 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import paperApi from '@/api/paper'
-import courseApi from '@/api/course'
 
 const loading = ref(false)
 const paperList = ref([])
 const total = ref(0)
 const pageNum = ref(1)
 const pageSize = ref(10)
-const courses = ref([])
 
 const searchForm = ref({
-  name: '',
-  courseId: null
+  name: ''
 })
 
 const dialogVisible = ref(false)
@@ -142,7 +127,6 @@ const dialogTitle = ref('新增试卷')
 const paperForm = ref({
   id: null,
   name: '',
-  courseId: null,
   duration: 120,
   totalScore: 100,
   description: ''
@@ -150,7 +134,6 @@ const paperForm = ref({
 
 const rules = {
   name: [{ required: true, message: '请输入试卷名称', trigger: 'blur' }],
-  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
   duration: [{ required: true, message: '请输入考试时长', trigger: 'blur' }],
   totalScore: [{ required: true, message: '请输入总分', trigger: 'blur' }]
 }
@@ -163,7 +146,6 @@ const paperQuestions = ref([])
 
 onMounted(() => {
   loadPaperList()
-  loadCourses()
 })
 
 const loadPaperList = async () => {
@@ -177,15 +159,6 @@ const loadPaperList = async () => {
   }
 }
 
-const loadCourses = async () => {
-  try {
-    const res = await courseApi.getList()
-    courses.value = res.data || []
-  } catch (error) {
-    console.error('加载课程失败', error)
-  }
-}
-
 const handleSearch = () => {
   pageNum.value = 1
   loadPaperList()
@@ -193,8 +166,7 @@ const handleSearch = () => {
 
 const handleReset = () => {
   searchForm.value = {
-    name: '',
-    courseId: null
+    name: ''
   }
   handleSearch()
 }
@@ -214,7 +186,6 @@ const handleAdd = () => {
   paperForm.value = {
     id: null,
     name: '',
-    courseId: null,
     duration: 120,
     totalScore: 100,
     description: ''
@@ -243,12 +214,6 @@ const handleSave = async () => {
   await paperFormRef.value.validate()
   loading.value = true
   try {
-    // 获取课程名称
-    const course = courses.value.find(c => c.id === paperForm.value.courseId)
-    if (course) {
-      paperForm.value.courseName = course.name
-    }
-    
     if (paperForm.value.id) {
       await paperApi.update(paperForm.value)
       ElMessage.success('更新成功')

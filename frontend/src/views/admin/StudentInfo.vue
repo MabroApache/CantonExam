@@ -16,9 +16,6 @@
         <el-form-item label="姓名">
           <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable />
         </el-form-item>
-        <el-form-item label="班级">
-          <el-input v-model="searchForm.className" placeholder="请输入班级" clearable />
-        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
             <el-option label="待审核" :value="0" />
@@ -41,10 +38,8 @@
             {{ row.gender === 1 ? '男' : '女' }}
           </template>
         </el-table-column>
-        <el-table-column prop="studentNo" label="学号" width="120" />
-        <el-table-column prop="className" label="班级" width="120" />
-        <el-table-column prop="major" label="专业" />
-        <el-table-column prop="college" label="学院" />
+        <el-table-column prop="phone" label="联系电话" width="130" />
+        <el-table-column prop="email" label="邮箱" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'danger'">
@@ -99,18 +94,6 @@
         <el-form-item label="邮箱">
           <el-input v-model="studentForm.email" placeholder="请输入邮箱" />
         </el-form-item>
-        <el-form-item label="学号" prop="studentNo">
-          <el-input v-model="studentForm.studentNo" placeholder="请输入学号" />
-        </el-form-item>
-        <el-form-item label="班级" prop="className">
-          <el-input v-model="studentForm.className" placeholder="请输入班级" />
-        </el-form-item>
-        <el-form-item label="专业">
-          <el-input v-model="studentForm.major" placeholder="请输入专业" />
-        </el-form-item>
-        <el-form-item label="学院">
-          <el-input v-model="studentForm.college" placeholder="请输入学院" />
-        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="studentForm.status">
             <el-option label="待审核" :value="0" />
@@ -160,7 +143,6 @@ const pageSize = ref(10)
 const searchForm = ref({
   username: '',
   name: '',
-  className: '',
   status: null
 })
 
@@ -174,19 +156,13 @@ const studentForm = ref({
   gender: '1',
   phone: '',
   email: '',
-  studentNo: '',
-  className: '',
-  major: '',
-  college: '',
   status: 0
 })
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
-  className: [{ required: true, message: '请输入班级', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
 }
 
 const studentFormRef = ref(null)
@@ -219,7 +195,6 @@ const handleReset = () => {
   searchForm.value = {
     username: '',
     name: '',
-    className: '',
     status: null
   }
   handleSearch()
@@ -245,10 +220,6 @@ const handleAdd = () => {
     gender: '1',
     phone: '',
     email: '',
-    studentNo: '',
-    className: '',
-    major: '',
-    college: '',
     status: 0
   }
   dialogVisible.value = true

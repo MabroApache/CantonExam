@@ -1,20 +1,7 @@
 <template>
   <div class="teacher-home">
     <el-row :gutter="20">
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon" style="background: #409EFF">
-              <el-icon><Reading /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.courseCount }}</div>
-              <div class="stat-label">我的课程</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
+      <el-col :span="8">
         <el-card class="stat-card">
           <div class="stat-content">
             <div class="stat-icon" style="background: #67C23A">
@@ -27,7 +14,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="8">
         <el-card class="stat-card">
           <div class="stat-content">
             <div class="stat-icon" style="background: #E6A23C">
@@ -40,7 +27,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="8">
         <el-card class="stat-card">
           <div class="stat-content">
             <div class="stat-icon" style="background: #F56C6C">
@@ -83,7 +70,6 @@
           </template>
           <el-table :data="exams" style="width: 100%">
             <el-table-column prop="name" label="考试名称" />
-            <el-table-column prop="courseName" label="课程" />
             <el-table-column prop="startTime" label="开始时间" width="180" />
             <el-table-column prop="status" label="状态" width="100">
               <template #default="{ row }">
@@ -104,7 +90,6 @@ import { ref, onMounted, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import noticeApi from '@/api/notice'
 import examApi from '@/api/exam'
-import courseApi from '@/api/course'
 import questionApi from '@/api/question'
 import paperApi from '@/api/paper'
 
@@ -112,7 +97,6 @@ const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
 
 const stats = ref({
-  courseCount: 0,
   questionCount: 0,
   paperCount: 0,
   examCount: 0
@@ -123,9 +107,6 @@ const exams = ref([])
 
 onMounted(async () => {
   try {
-    const courses = await courseApi.getByTeacherId(userInfo.value.id)
-    stats.value.courseCount = courses.data?.length || 0
-    
     const questions = await questionApi.getByTeacherId(userInfo.value.id)
     stats.value.questionCount = questions.data?.length || 0
     

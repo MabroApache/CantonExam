@@ -17,6 +17,11 @@ public class StudentAnswer implements Serializable {
     private Long questionId;
     private Long typeId;
     private String typeName;
+    private String title;
+    private String optionA;
+    private String optionB;
+    private String optionC;
+    private String optionD;
     private String studentAnswer;
     private String correctAnswer;
     private BigDecimal score;

@@ -7,7 +7,6 @@
       
       <el-table :data="scoreList" style="width: 100%" v-loading="loading">
         <el-table-column prop="examName" label="考试名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="totalScore" label="总分" width="100">
           <template #default="{ row }">
             <span :style="{ color: row.totalScore >= 60 ? '#67C23A' : '#F56C6C' }">
@@ -31,7 +30,6 @@
       <div v-if="currentScore">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="考试名称">{{ currentScore.examName }}</el-descriptions-item>
-          <el-descriptions-item label="课程">{{ currentScore.courseName }}</el-descriptions-item>
           <el-descriptions-item label="总分">{{ currentScore.totalScore }}分</el-descriptions-item>
           <el-descriptions-item label="客观题得分">{{ currentScore.objectiveScore }}分</el-descriptions-item>
           <el-descriptions-item label="主观题得分">{{ currentScore.subjectiveScore }}分</el-descriptions-item>

@@ -26,7 +26,7 @@ CREATE TABLE `admin` (
   UNIQUE KEY `uk_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
 
--- 初始化管理员账号（密码：admin123，使用MD5加密）
+-- 初始化管理员账号（密码：123456，使用MD5加密）
 INSERT INTO `admin` (`username`, `password`, `name`, `phone`, `email`) 
 VALUES ('admin', 'e10adc3949ba59abbe56e057f20f883e', '系统管理员', '13800138000', 'admin@cantonfair.com');
 
@@ -58,17 +58,13 @@ CREATE TABLE `teacher` (
 DROP TABLE IF EXISTS `student`;
 CREATE TABLE `student` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `username` VARCHAR(50) NOT NULL COMMENT '用户名/学号',
+  `username` VARCHAR(50) NOT NULL COMMENT '用户名',
   `password` VARCHAR(100) NOT NULL COMMENT '密码',
   `name` VARCHAR(50) DEFAULT NULL COMMENT '姓名',
   `gender` TINYINT DEFAULT 1 COMMENT '性别：0-女，1-男',
   `phone` VARCHAR(20) DEFAULT NULL COMMENT '联系电话',
   `email` VARCHAR(100) DEFAULT NULL COMMENT '邮箱',
   `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像',
-  `student_no` VARCHAR(50) DEFAULT NULL COMMENT '学号',
-  `class_name` VARCHAR(100) DEFAULT NULL COMMENT '班级',
-  `major` VARCHAR(100) DEFAULT NULL COMMENT '专业',
-  `college` VARCHAR(100) DEFAULT NULL COMMENT '学院',
   `status` TINYINT DEFAULT 0 COMMENT '状态：0-待审核，1-已通过，2-已拒绝',
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -102,33 +98,11 @@ INSERT INTO `question_type` (`name`, `code`, `description`, `sort`) VALUES
 ('简答题', 'essay', '根据题目要求进行简答', 5);
 
 -- ========================================
--- 5. 课程表
--- ========================================
-DROP TABLE IF EXISTS `course`;
-CREATE TABLE `course` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `name` VARCHAR(100) NOT NULL COMMENT '课程名称',
-  `code` VARCHAR(50) DEFAULT NULL COMMENT '课程编码',
-  `teacher_id` BIGINT NOT NULL COMMENT '教师ID',
-  `teacher_name` VARCHAR(50) DEFAULT NULL COMMENT '教师姓名',
-  `description` TEXT COMMENT '课程描述',
-  `credit` DECIMAL(3,1) DEFAULT NULL COMMENT '学分',
-  `hours` INT DEFAULT NULL COMMENT '学时',
-  `status` TINYINT DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `idx_teacher_id` (`teacher_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='课程表';
-
--- ========================================
--- 6. 题库表
+-- 5. 题库表
 -- ========================================
 DROP TABLE IF EXISTS `question`;
 CREATE TABLE `question` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `course_id` BIGINT NOT NULL COMMENT '课程ID',
-  `course_name` VARCHAR(100) DEFAULT NULL COMMENT '课程名称',
   `type_id` BIGINT NOT NULL COMMENT '题型ID',
   `type_name` VARCHAR(50) DEFAULT NULL COMMENT '题型名称',
   `teacher_id` BIGINT NOT NULL COMMENT '教师ID',
@@ -138,8 +112,6 @@ CREATE TABLE `question` (
   `option_b` VARCHAR(500) DEFAULT NULL COMMENT '选项B',
   `option_c` VARCHAR(500) DEFAULT NULL COMMENT '选项C',
   `option_d` VARCHAR(500) DEFAULT NULL COMMENT '选项D',
-  `option_e` VARCHAR(500) DEFAULT NULL COMMENT '选项E',
-  `option_f` VARCHAR(500) DEFAULT NULL COMMENT '选项F',
   `answer` TEXT NOT NULL COMMENT '正确答案',
   `analysis` TEXT COMMENT '答案解析',
   `score` DECIMAL(5,1) DEFAULT 0 COMMENT '分值',
@@ -148,20 +120,17 @@ CREATE TABLE `question` (
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `idx_course_id` (`course_id`),
   KEY `idx_type_id` (`type_id`),
   KEY `idx_teacher_id` (`teacher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='题库表';
 
 -- ========================================
--- 7. 试卷表
+-- 6. 试卷表
 -- ========================================
 DROP TABLE IF EXISTS `paper`;
 CREATE TABLE `paper` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `name` VARCHAR(100) NOT NULL COMMENT '试卷名称',
-  `course_id` BIGINT NOT NULL COMMENT '课程ID',
-  `course_name` VARCHAR(100) DEFAULT NULL COMMENT '课程名称',
   `teacher_id` BIGINT NOT NULL COMMENT '教师ID',
   `teacher_name` VARCHAR(50) DEFAULT NULL COMMENT '教师姓名',
   `total_score` DECIMAL(5,1) DEFAULT 100 COMMENT '总分',
@@ -176,12 +145,11 @@ CREATE TABLE `paper` (
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `idx_course_id` (`course_id`),
   KEY `idx_teacher_id` (`teacher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='试卷表';
 
 -- ========================================
--- 8. 试卷题目关联表
+-- 7. 试卷题目关联表
 -- ========================================
 DROP TABLE IF EXISTS `paper_question`;
 CREATE TABLE `paper_question` (
@@ -197,7 +165,7 @@ CREATE TABLE `paper_question` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='试卷题目关联表';
 
 -- ========================================
--- 9. 考试安排表
+-- 8. 考试安排表
 -- ========================================
 DROP TABLE IF EXISTS `exam`;
 CREATE TABLE `exam` (
@@ -205,8 +173,6 @@ CREATE TABLE `exam` (
   `name` VARCHAR(100) NOT NULL COMMENT '考试名称',
   `paper_id` BIGINT NOT NULL COMMENT '试卷ID',
   `paper_name` VARCHAR(100) DEFAULT NULL COMMENT '试卷名称',
-  `course_id` BIGINT NOT NULL COMMENT '课程ID',
-  `course_name` VARCHAR(100) DEFAULT NULL COMMENT '课程名称',
   `teacher_id` BIGINT NOT NULL COMMENT '教师ID',
   `teacher_name` VARCHAR(50) DEFAULT NULL COMMENT '教师姓名',
   `start_time` DATETIME NOT NULL COMMENT '开始时间',
@@ -219,12 +185,11 @@ CREATE TABLE `exam` (
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_paper_id` (`paper_id`),
-  KEY `idx_course_id` (`course_id`),
   KEY `idx_teacher_id` (`teacher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='考试安排表';
 
 -- ========================================
--- 10. 考试记录表
+-- 9. 考试记录表
 -- ========================================
 DROP TABLE IF EXISTS `exam_record`;
 CREATE TABLE `exam_record` (
@@ -250,7 +215,7 @@ CREATE TABLE `exam_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='考试记录表';
 
 -- ========================================
--- 11. 学生答案表
+-- 10. 学生答案表
 -- ========================================
 DROP TABLE IF EXISTS `student_answer`;
 CREATE TABLE `student_answer` (
@@ -273,7 +238,7 @@ CREATE TABLE `student_answer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生答案表';
 
 -- ========================================
--- 12. 成绩表
+-- 11. 成绩表
 -- ========================================
 DROP TABLE IF EXISTS `score`;
 CREATE TABLE `score` (
@@ -282,12 +247,8 @@ CREATE TABLE `score` (
   `exam_name` VARCHAR(100) DEFAULT NULL COMMENT '考试名称',
   `paper_id` BIGINT NOT NULL COMMENT '试卷ID',
   `paper_name` VARCHAR(100) DEFAULT NULL COMMENT '试卷名称',
-  `course_id` BIGINT NOT NULL COMMENT '课程ID',
-  `course_name` VARCHAR(100) DEFAULT NULL COMMENT '课程名称',
   `student_id` BIGINT NOT NULL COMMENT '学生ID',
   `student_name` VARCHAR(50) DEFAULT NULL COMMENT '学生姓名',
-  `student_no` VARCHAR(50) DEFAULT NULL COMMENT '学号',
-  `class_name` VARCHAR(100) DEFAULT NULL COMMENT '班级',
   `total_score` DECIMAL(5,1) DEFAULT 0 COMMENT '总分',
   `objective_score` DECIMAL(5,1) DEFAULT 0 COMMENT '客观题得分',
   `subjective_score` DECIMAL(5,1) DEFAULT 0 COMMENT '主观题得分',
@@ -297,12 +258,11 @@ CREATE TABLE `score` (
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_exam_id` (`exam_id`),
-  KEY `idx_course_id` (`course_id`),
   KEY `idx_student_id` (`student_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='成绩表';
 
 -- ========================================
--- 13. 系统公告表
+-- 12. 系统公告表
 -- ========================================
 DROP TABLE IF EXISTS `notice`;
 CREATE TABLE `notice` (
@@ -317,41 +277,3 @@ CREATE TABLE `notice` (
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统公告表';
-
--- ========================================
--- 14. 交流分享表
--- ========================================
-DROP TABLE IF EXISTS `share`;
-CREATE TABLE `share` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `student_id` BIGINT NOT NULL COMMENT '学生ID',
-  `student_name` VARCHAR(50) DEFAULT NULL COMMENT '学生姓名',
-  `title` VARCHAR(200) NOT NULL COMMENT '分享标题',
-  `content` TEXT COMMENT '分享内容（富文本）',
-  `view_count` INT DEFAULT 0 COMMENT '浏览次数',
-  `like_count` INT DEFAULT 0 COMMENT '点赞次数',
-  `status` TINYINT DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `idx_student_id` (`student_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交流分享表';
-
--- ========================================
--- 15. 评论表
--- ========================================
-DROP TABLE IF EXISTS `comment`;
-CREATE TABLE `comment` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `share_id` BIGINT NOT NULL COMMENT '分享ID',
-  `student_id` BIGINT NOT NULL COMMENT '学生ID',
-  `student_name` VARCHAR(50) DEFAULT NULL COMMENT '学生姓名',
-  `content` TEXT NOT NULL COMMENT '评论内容',
-  `parent_id` BIGINT DEFAULT NULL COMMENT '父评论ID',
-  `status` TINYINT DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `idx_share_id` (`share_id`),
-  KEY `idx_student_id` (`student_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评论表';

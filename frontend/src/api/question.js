@@ -13,10 +13,6 @@ export default {
     return request.get('/question/search', { params })
   },
   
-  getByCourseId(courseId) {
-    return request.get(`/question/course/${courseId}`)
-  },
-  
   getByTypeId(typeId) {
     return request.get(`/question/type/${typeId}`)
   },

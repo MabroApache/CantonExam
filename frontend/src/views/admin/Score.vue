@@ -24,7 +24,6 @@
       <!-- 成绩列表 -->
       <el-table :data="scoreList" style="width: 100%" v-loading="loading">
         <el-table-column prop="examName" label="考试名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="studentName" label="学生姓名" width="120" />
         <el-table-column prop="totalScore" label="总分" width="100">
           <template #default="{ row }">
@@ -61,7 +60,6 @@
     <el-dialog title="成绩详情" v-model="viewDialogVisible" width="800px">
       <el-descriptions :column="2" border>
         <el-descriptions-item label="考试名称">{{ viewScore.examName }}</el-descriptions-item>
-        <el-descriptions-item label="课程">{{ viewScore.courseName }}</el-descriptions-item>
         <el-descriptions-item label="学生姓名">{{ viewScore.studentName }}</el-descriptions-item>
         <el-descriptions-item label="总分">
           <span :style="{ color: viewScore.totalScore >= 60 ? '#67C23A' : '#F56C6C', fontWeight: 'bold' }">

@@ -10,10 +10,6 @@
             <el-icon><HomeFilled /></el-icon>
             <span>系统首页</span>
           </el-menu-item>
-          <el-menu-item index="/teacher/course">
-            <el-icon><Reading /></el-icon>
-            <span>课程信息</span>
-          </el-menu-item>
           <el-menu-item index="/teacher/question">
             <el-icon><EditPen /></el-icon>
             <span>题库信息</span>

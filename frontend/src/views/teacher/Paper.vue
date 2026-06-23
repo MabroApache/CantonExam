@@ -11,7 +11,6 @@
       
       <el-table :data="paperList" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="试卷名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="totalScore" label="总分" width="80" />
         <el-table-column prop="duration" label="时长(分钟)" width="100" />
         <el-table-column prop="singleCount" label="单选" width="60" />
@@ -37,16 +36,10 @@
       </el-table>
     </el-card>
     
-    <!-- 手动组卷对话框 -->
     <el-dialog title="手动组卷" v-model="manualDialogVisible" width="800px">
       <el-form :model="manualForm" :rules="manualRules" ref="manualFormRef" label-width="100px">
         <el-form-item label="试卷名称" prop="name">
           <el-input v-model="manualForm.name" placeholder="请输入试卷名称" />
-        </el-form-item>
-        <el-form-item label="课程" prop="courseId">
-          <el-select v-model="manualForm.courseId" placeholder="请选择课程" @change="handleManualCourseChange">
-            <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id" />
-          </el-select>
         </el-form-item>
         <el-form-item label="考试时长" prop="duration">
           <el-input-number v-model="manualForm.duration" :min="30" :max="180" />
@@ -55,7 +48,6 @@
           <el-input v-model="manualForm.description" type="textarea" :rows="3" placeholder="请输入试卷说明" />
         </el-form-item>
         
-        <!-- 选择题目 -->
         <el-form-item label="选择题目">
           <el-tabs v-model="questionTab">
             <el-tab-pane label="单选题" name="single">
@@ -102,16 +94,10 @@
       </template>
     </el-dialog>
     
-    <!-- 自动组卷对话框 -->
     <el-dialog title="自动组卷" v-model="autoDialogVisible" width="600px">
       <el-form :model="autoForm" :rules="autoRules" ref="autoFormRef" label-width="100px">
         <el-form-item label="试卷名称" prop="name">
           <el-input v-model="autoForm.name" placeholder="请输入试卷名称" />
-        </el-form-item>
-        <el-form-item label="课程" prop="courseId">
-          <el-select v-model="autoForm.courseId" placeholder="请选择课程" @change="handleAutoCourseChange">
-            <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id" />
-          </el-select>
         </el-form-item>
         <el-form-item label="考试时长" prop="duration">
           <el-input-number v-model="autoForm.duration" :min="30" :max="180" />
@@ -200,7 +186,6 @@ import { ref, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import paperApi from '@/api/paper'
-import courseApi from '@/api/course'
 import questionApi from '@/api/question'
 
 const userStore = useUserStore()
@@ -208,7 +193,6 @@ const userInfo = computed(() => userStore.userInfo)
 
 const loading = ref(false)
 const paperList = ref([])
-const courses = ref([])
 const allQuestions = ref([])
 
 const questionTab = ref('single')
@@ -216,8 +200,6 @@ const questionTab = ref('single')
 const manualDialogVisible = ref(false)
 const manualForm = ref({
   name: '',
-  courseId: null,
-  courseName: '',
   teacherId: userInfo.value.id,
   teacherName: userInfo.value.name,
   duration: 60,
@@ -227,7 +209,6 @@ const manualForm = ref({
 
 const manualRules = {
   name: [{ required: true, message: '请输入试卷名称', trigger: 'blur' }],
-  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
   duration: [{ required: true, message: '请输入考试时长', trigger: 'blur' }]
 }
 
@@ -236,8 +217,6 @@ const manualFormRef = ref(null)
 const autoDialogVisible = ref(false)
 const autoForm = ref({
   name: '',
-  courseId: null,
-  courseName: '',
   teacherId: userInfo.value.id,
   teacherName: userInfo.value.name,
   duration: 60,
@@ -256,7 +235,6 @@ const autoForm = ref({
 
 const autoRules = {
   name: [{ required: true, message: '请输入试卷名称', trigger: 'blur' }],
-  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
   duration: [{ required: true, message: '请输入考试时长', trigger: 'blur' }]
 }
 
@@ -269,18 +247,8 @@ const fillQuestions = computed(() => allQuestions.value.filter(q => q.typeName =
 const essayQuestions = computed(() => allQuestions.value.filter(q => q.typeName === '简答题'))
 
 onMounted(async () => {
-  await loadCourses()
   await loadPaperList()
 })
-
-const loadCourses = async () => {
-  try {
-    const res = await courseApi.getByTeacherId(userInfo.value.id)
-    courses.value = res.data || []
-  } catch (error) {
-    console.error('获取课程失败', error)
-  }
-}
 
 const loadPaperList = async () => {
   loading.value = true
@@ -292,47 +260,31 @@ const loadPaperList = async () => {
   }
 }
 
-const handleManualCourseChange = async (courseId) => {
-  const course = courses.value.find(c => c.id === courseId)
-  if (course) {
-    manualForm.value.courseName = course.name
-    // 加载该课程的题目
-    try {
-      const res = await questionApi.getByCourseId(courseId)
-      allQuestions.value = res.data || []
-    } catch (error) {
-      console.error('获取题目失败', error)
-    }
+const loadQuestions = async () => {
+  try {
+    const res = await questionApi.getByTeacherId(userInfo.value.id)
+    allQuestions.value = res.data || []
+  } catch (error) {
+    console.error('获取题目失败', error)
   }
 }
 
-const handleAutoCourseChange = (courseId) => {
-  const course = courses.value.find(c => c.id === courseId)
-  if (course) {
-    autoForm.value.courseName = course.name
-  }
-}
-
-const handleManualCreate = () => {
+const handleManualCreate = async () => {
   manualForm.value = {
     name: '',
-    courseId: null,
-    courseName: '',
     teacherId: userInfo.value.id,
     teacherName: userInfo.value.name,
     duration: 60,
     description: '',
     questionIds: []
   }
-  allQuestions.value = []
+  await loadQuestions()
   manualDialogVisible.value = true
 }
 
 const handleAutoCreate = () => {
   autoForm.value = {
     name: '',
-    courseId: null,
-    courseName: '',
     teacherId: userInfo.value.id,
     teacherName: userInfo.value.name,
     duration: 60,
@@ -384,7 +336,6 @@ const handleAutoSave = async () => {
 }
 
 const handleView = (row) => {
-  // 查看试卷详情
   ElMessage.info('查看试卷详情功能待实现')
 }
 

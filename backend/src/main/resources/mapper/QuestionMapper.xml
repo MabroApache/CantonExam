@@ -4,8 +4,6 @@
 
     <resultMap id="BaseResultMap" type="com.cantonfair.exam.entity.Question">
         <id column="id" property="id"/>
-        <result column="course_id" property="courseId"/>
-        <result column="course_name" property="courseName"/>
         <result column="type_id" property="typeId"/>
         <result column="type_name" property="typeName"/>
         <result column="teacher_id" property="teacherId"/>
@@ -15,8 +13,6 @@
         <result column="option_b" property="optionB"/>
         <result column="option_c" property="optionC"/>
         <result column="option_d" property="optionD"/>
-        <result column="option_e" property="optionE"/>
-        <result column="option_f" property="optionF"/>
         <result column="answer" property="answer"/>
         <result column="analysis" property="analysis"/>
         <result column="score" property="score"/>
@@ -27,8 +23,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, course_id, course_name, type_id, type_name, teacher_id, teacher_name, title, 
-        option_a, option_b, option_c, option_d, option_e, option_f, answer, analysis, 
+        id, type_id, type_name, teacher_id, teacher_name, title, 
+        option_a, option_b, option_c, option_d, answer, analysis, 
         score, difficulty, status, create_time, update_time
     </sql>
 
@@ -48,9 +44,6 @@
         select <include refid="Base_Column_List"/>
         from question
         <where>
-            <if test="courseId != null">
-                and course_id = #{courseId}
-            </if>
             <if test="typeId != null">
                 and type_id = #{typeId}
             </if>
@@ -67,13 +60,6 @@
                 and status = #{status}
             </if>
         </where>
-        order by create_time desc
-    </select>
-
-    <select id="selectByCourseId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
-        from question
-        where course_id = #{courseId} and status = 1
         order by create_time desc
     </select>
 
@@ -94,25 +80,23 @@
     <select id="selectRandomQuestions" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from question
-        where course_id = #{courseId} and type_id = #{typeId} and status = 1
+        where type_id = #{typeId} and status = 1
         order by rand()
         limit #{count}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into question(course_id, course_name, type_id, type_name, teacher_id, teacher_name, 
-        title, option_a, option_b, option_c, option_d, option_e, option_f, answer, analysis, 
+        insert into question(type_id, type_name, teacher_id, teacher_name, 
+        title, option_a, option_b, option_c, option_d, answer, analysis, 
         score, difficulty, status)
-        values(#{courseId}, #{courseName}, #{typeId}, #{typeName}, #{teacherId}, #{teacherName}, 
-        #{title}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, #{optionE}, #{optionF}, 
+        values(#{typeId}, #{typeName}, #{teacherId}, #{teacherName}, 
+        #{title}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, 
         #{answer}, #{analysis}, #{score}, #{difficulty}, #{status})
     </insert>
 
     <update id="update">
         update question
         <set>
-            <if test="courseId != null">course_id = #{courseId},</if>
-            <if test="courseName != null">course_name = #{courseName},</if>
             <if test="typeId != null">type_id = #{typeId},</if>
             <if test="typeName != null">type_name = #{typeName},</if>
             <if test="title != null">title = #{title},</if>
@@ -120,8 +104,6 @@
             <if test="optionB != null">option_b = #{optionB},</if>
             <if test="optionC != null">option_c = #{optionC},</if>
             <if test="optionD != null">option_d = #{optionD},</if>
-            <if test="optionE != null">option_e = #{optionE},</if>
-            <if test="optionF != null">option_f = #{optionF},</if>
             <if test="answer != null">answer = #{answer},</if>
             <if test="analysis != null">analysis = #{analysis},</if>
             <if test="score != null">score = #{score},</if>

@@ -60,6 +60,9 @@
             <if test="status != null">
                 and er.status = #{status}
             </if>
+            <if test="teacherId != null">
+                and e.teacher_id = #{teacherId}
+            </if>
         </where>
         order by er.create_time desc
     </select>

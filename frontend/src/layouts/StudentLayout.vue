@@ -19,14 +19,6 @@
             <el-icon><TrendCharts /></el-icon>
             <span>我的成绩</span>
           </el-menu-item>
-          <el-menu-item index="/student/share">
-            <el-icon><EditPen /></el-icon>
-            <span>我的分享</span>
-          </el-menu-item>
-          <el-menu-item index="/student/forum">
-            <el-icon><ChatDotRound /></el-icon>
-            <span>交流论坛</span>
-          </el-menu-item>
           <el-menu-item index="/student/profile">
             <el-icon><Setting /></el-icon>
             <span>个人中心</span>

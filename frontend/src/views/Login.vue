@@ -104,8 +104,8 @@
     <!-- 学生注册对话框 -->
     <el-dialog title="学生注册" v-model="studentRegisterVisible" width="500px">
       <el-form :model="studentRegisterForm" :rules="studentRegisterRules" ref="studentRegisterFormRef">
-        <el-form-item label="用户名/学号" prop="username">
-          <el-input v-model="studentRegisterForm.username" placeholder="请输入用户名/学号" />
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="studentRegisterForm.username" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="studentRegisterForm.password" type="password" placeholder="请输入密码" show-password />
@@ -124,18 +124,6 @@
         </el-form-item>
         <el-form-item label="邮箱">
           <el-input v-model="studentRegisterForm.email" placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="学号" prop="studentNo">
-          <el-input v-model="studentRegisterForm.studentNo" placeholder="请输入学号" />
-        </el-form-item>
-        <el-form-item label="班级" prop="className">
-          <el-input v-model="studentRegisterForm.className" placeholder="请输入班级" />
-        </el-form-item>
-        <el-form-item label="专业">
-          <el-input v-model="studentRegisterForm.major" placeholder="请输入专业" />
-        </el-form-item>
-        <el-form-item label="学院">
-          <el-input v-model="studentRegisterForm.college" placeholder="请输入学院" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -200,11 +188,7 @@ const studentRegisterForm = ref({
   name: '',
   gender: '1',
   phone: '',
-  email: '',
-  studentNo: '',
-  className: '',
-  major: '',
-  college: ''
+  email: ''
 })
 
 // 登录验证规则
@@ -223,11 +207,9 @@ const registerRules = {
 }
 
 const studentRegisterRules = {
-  username: [{ required: true, message: '请输入用户名/学号', trigger: 'blur' }],
+  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
-  className: [{ required: true, message: '请输入班级', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
 }
 
 const adminFormRef = ref(null)
@@ -331,11 +313,7 @@ const handleStudentRegister = async () => {
       name: '',
       gender: '1',
       phone: '',
-      email: '',
-      studentNo: '',
-      className: '',
-      major: '',
-      college: ''
+      email: ''
     }
   } finally {
     loading.value = false

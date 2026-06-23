@@ -17,12 +17,6 @@
             <el-form-item label="账号">
               <el-input v-model="infoForm.username" disabled />
             </el-form-item>
-            <el-form-item label="学号">
-              <el-input v-model="infoForm.studentNo" disabled />
-            </el-form-item>
-            <el-form-item label="班级">
-              <el-input v-model="infoForm.className" disabled />
-            </el-form-item>
             <el-form-item label="联系电话" prop="phone">
               <el-input v-model="infoForm.phone" placeholder="请输入联系电话" />
             </el-form-item>
@@ -78,8 +72,6 @@ const infoForm = ref({
   id: null,
   name: '',
   username: '',
-  studentNo: '',
-  className: '',
   phone: '',
   email: '',
   status: 0
@@ -129,8 +121,6 @@ const loadUserInfo = () => {
     id: userInfo.value.id,
     name: userInfo.value.name,
     username: userInfo.value.username,
-    studentNo: userInfo.value.studentNo || '',
-    className: userInfo.value.className || '',
     phone: userInfo.value.phone || '',
     email: userInfo.value.email || '',
     status: userInfo.value.status || 0

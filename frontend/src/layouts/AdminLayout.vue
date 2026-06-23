@@ -23,10 +23,6 @@
             <el-icon><Document /></el-icon>
             <span>题型信息</span>
           </el-menu-item>
-          <el-menu-item index="/admin/course">
-            <el-icon><Reading /></el-icon>
-            <span>课程信息</span>
-          </el-menu-item>
           <el-menu-item index="/admin/question">
             <el-icon><EditPen /></el-icon>
             <span>题库信息</span>
@@ -34,10 +30,6 @@
           <el-menu-item index="/admin/paper">
             <el-icon><Document /></el-icon>
             <span>试卷信息</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/share">
-            <el-icon><ChatDotRound /></el-icon>
-            <span>交流分享</span>
           </el-menu-item>
           <el-menu-item index="/admin/score">
             <el-icon><TrendCharts /></el-icon>

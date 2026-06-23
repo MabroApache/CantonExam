@@ -84,7 +84,6 @@
           </template>
           <el-table :data="exams" style="width: 100%">
             <el-table-column prop="name" label="考试名称" />
-            <el-table-column prop="courseName" label="课程" />
             <el-table-column prop="startTime" label="开始时间" width="180" />
             <el-table-column prop="status" label="状态" width="100">
               <template #default="{ row }">
@@ -132,7 +131,7 @@ import { useUserStore } from '@/stores/user'
 import noticeApi from '@/api/notice'
 import examApi from '@/api/exam'
 import scoreApi from '@/api/score'
-import shareApi from '@/api/share'
+
 
 const router = useRouter()
 const userStore = useUserStore()

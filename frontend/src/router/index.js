@@ -44,12 +44,6 @@ const routes = [
         meta: { title: '题型信息' }
       },
       {
-        path: 'course',
-        name: 'Course',
-        component: () => import('@/views/admin/Course.vue'),
-        meta: { title: '课程信息' }
-      },
-      {
         path: 'question',
         name: 'Question',
         component: () => import('@/views/admin/Question.vue'),
@@ -60,12 +54,6 @@ const routes = [
         name: 'Paper',
         component: () => import('@/views/admin/Paper.vue'),
         meta: { title: '试卷信息' }
-      },
-      {
-        path: 'share',
-        name: 'ShareManage',
-        component: () => import('@/views/admin/Share.vue'),
-        meta: { title: '交流分享' }
       },
       {
         path: 'score',
@@ -111,12 +99,6 @@ const routes = [
         name: 'TeacherHome',
         component: () => import('@/views/teacher/Home.vue'),
         meta: { title: '系统首页' }
-      },
-      {
-        path: 'course',
-        name: 'TeacherCourse',
-        component: () => import('@/views/teacher/Course.vue'),
-        meta: { title: '课程信息' }
       },
       {
         path: 'question',
@@ -182,18 +164,6 @@ const routes = [
         meta: { title: '我的成绩' }
       },
       {
-        path: 'share',
-        name: 'MyShare',
-        component: () => import('@/views/student/MyShare.vue'),
-        meta: { title: '我的分享' }
-      },
-      {
-        path: 'forum',
-        name: 'Forum',
-        component: () => import('@/views/student/Forum.vue'),
-        meta: { title: '交流论坛' }
-      },
-      {
         path: 'profile',
         name: 'StudentProfile',
         component: () => import('@/views/student/Profile.vue'),
@@ -208,28 +178,23 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   const token = userStore.token || localStorage.getItem('token')
   const role = userStore.role || localStorage.getItem('role')
 
-  // 设置页面标题
   document.title = to.meta.title || '广交会在线考试系统'
 
-  // 登录页面直接放行
   if (to.path === '/login') {
     next()
     return
   }
 
-  // 未登录跳转到登录页
   if (!token) {
     next('/login')
     return
   }
 
-  // 权限验证
   const requiredRole = to.meta.role
   if (requiredRole && role !== requiredRole) {
     next('/login')

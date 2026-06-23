@@ -30,7 +30,6 @@
       <!-- 待阅卷列表 -->
       <el-table :data="recordList" style="width: 100%" v-loading="loading">
         <el-table-column prop="examName" label="考试名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="studentName" label="学生姓名" width="120" />
         <el-table-column prop="objectiveScore" label="客观题得分" width="120" />
         <el-table-column prop="subjectiveScore" label="主观题得分" width="120">
@@ -70,7 +69,7 @@
     </el-card>
     
     <!-- 阅卷对话框 -->
-    <el-dialog title="阅卷打分" v-model="gradeDialogVisible" width="800px">
+    <el-dialog title="阅卷打分" v-model="gradeDialogVisible" width="900px">
       <el-descriptions :column="2" border>
         <el-descriptions-item label="考试名称">{{ gradeRecord.examName }}</el-descriptions-item>
         <el-descriptions-item label="学生姓名">{{ gradeRecord.studentName }}</el-descriptions-item>
@@ -78,7 +77,32 @@
         <el-descriptions-item label="提交时间">{{ gradeRecord.submitTime }}</el-descriptions-item>
       </el-descriptions>
       
-      <el-divider>主观题阅卷</el-divider>
+      <el-divider>客观题（系统自动判分）</el-divider>
+      
+      <div v-for="(answer, index) in objectiveAnswers" :key="answer.id" class="grade-item">
+        <div class="grade-title">
+          <span class="grade-number">{{ index + 1 }}.</span>
+          <span>{{ answer.title }}</span>
+          <span class="grade-type">[{{ answer.typeName }}]</span>
+          <span class="grade-score">({{ answer.score }}分)</span>
+          <span :class="getCorrectClass(answer.isCorrect)" style="margin-left: 10px">
+            {{ getCorrectText(answer.isCorrect) }}
+          </span>
+        </div>
+        <div v-if="answer.optionA" class="grade-options">
+          <div>A. {{ answer.optionA }}</div>
+          <div>B. {{ answer.optionB }}</div>
+          <div>C. {{ answer.optionC }}</div>
+          <div>D. {{ answer.optionD }}</div>
+        </div>
+        <div class="grade-content">
+          <p><strong>学生答案：</strong>{{ answer.studentAnswer || '未作答' }}</p>
+          <p><strong>正确答案：</strong>{{ answer.correctAnswer }}</p>
+          <p><strong>得分：</strong><span :style="{ color: answer.getScore >= answer.score ? '#67C23A' : '#F56C6C', fontWeight: 'bold' }">{{ answer.getScore }}分</span></p>
+        </div>
+      </div>
+      
+      <el-divider>主观题（手动阅卷）</el-divider>
       
       <div v-for="(answer, index) in subjectiveAnswers" :key="answer.id" class="grade-item">
         <div class="grade-title">
@@ -175,12 +199,14 @@ const pageSize = ref(10)
 const searchForm = ref({
   examName: '',
   studentName: '',
-  gradeStatus: null
+  gradeStatus: null,
+  teacherId: userInfo.value.id
 })
 
 const gradeDialogVisible = ref(false)
 const gradeRecord = ref({})
 const subjectiveAnswers = ref([])
+const objectiveAnswers = ref([])
 
 const viewDialogVisible = ref(false)
 const viewRecord = ref({})
@@ -194,9 +220,8 @@ const loadRecordList = async () => {
   loading.value = true
   try {
     const res = await recordApi.search(searchForm.value)
-    // 教师只能阅卷自己课程的考试
-    recordList.value = res.data?.filter(r => r.teacherId === userInfo.value.id) || []
-    total.value = recordList.value.length || 0
+    recordList.value = res.data || []
+    total.value = res.data?.length || 0
   } finally {
     loading.value = false
   }
@@ -211,7 +236,8 @@ const handleReset = () => {
   searchForm.value = {
     examName: '',
     studentName: '',
-    gradeStatus: null
+    gradeStatus: null,
+    teacherId: userInfo.value.id
   }
   handleSearch()
 }
@@ -230,17 +256,20 @@ const handleGrade = async (row) => {
   gradeRecord.value = row
   try {
     const res = await recordApi.getAnswers(row.id)
-    // 只显示主观题（填空题和简答题）
-    subjectiveAnswers.value = res.data?.filter(a => a.typeCode === 'fill' || a.typeCode === 'essay') || []
-    // 初始化得分
+    const allAnswers = res.data || []
+    
+    objectiveAnswers.value = allAnswers.filter(a => a.typeName === '单选题' || a.typeName === '判断题' || a.typeName === '多选题')
+    subjectiveAnswers.value = allAnswers.filter(a => a.typeName === '填空题' || a.typeName === '简答题')
+    
     subjectiveAnswers.value.forEach(answer => {
-      if (!answer.getScore) {
+      if (!answer.getScore || answer.getScore === 0) {
         answer.getScore = 0
       }
       if (!answer.comment) {
         answer.comment = ''
       }
     })
+    
     gradeDialogVisible.value = true
   } catch (error) {
     ElMessage.error('获取答题详情失败')
@@ -261,12 +290,14 @@ const handleView = async (row) => {
 const handleSaveGrade = async () => {
   loading.value = true
   try {
+    const allAnswers = [...objectiveAnswers.value, ...subjectiveAnswers.value]
     const gradeData = {
       recordId: gradeRecord.value.id,
-      answers: subjectiveAnswers.value.map(a => ({
+      answers: allAnswers.map(a => ({
         id: a.id,
         getScore: a.getScore,
-        comment: a.comment
+        comment: a.comment,
+        typeName: a.typeName
       }))
     }
     await recordApi.gradeExam(gradeData)
@@ -277,11 +308,38 @@ const handleSaveGrade = async () => {
     loading.value = false
   }
 }
+
+const getCorrectClass = (isCorrect) => {
+  if (isCorrect === 1) return 'correct-tag'
+  if (isCorrect === 2) return 'partial-tag'
+  return 'wrong-tag'
+}
+
+const getCorrectText = (isCorrect) => {
+  if (isCorrect === 1) return '完全正确'
+  if (isCorrect === 2) return '部分正确'
+  return '错误'
+}
 </script>
 
 <style scoped>
 .teacher-grade {
   padding: 20px;
+}
+
+.correct-tag {
+  color: #67C23A;
+  font-weight: bold;
+}
+
+.partial-tag {
+  color: #E6A23C;
+  font-weight: bold;
+}
+
+.wrong-tag {
+  color: #F56C6C;
+  font-weight: bold;
 }
 
 .card-header {

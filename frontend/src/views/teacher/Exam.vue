@@ -13,11 +13,6 @@
         <el-form-item label="考试名称">
           <el-input v-model="searchForm.name" placeholder="请输入考试名称" clearable />
         </el-form-item>
-        <el-form-item label="课程">
-          <el-select v-model="searchForm.courseId" placeholder="请选择课程" clearable>
-            <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
             <el-option label="未开始" :value="0" />
@@ -34,7 +29,6 @@
       <!-- 考试列表 -->
       <el-table :data="examList" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="考试名称" />
-        <el-table-column prop="courseName" label="课程" width="150" />
         <el-table-column prop="paperName" label="试卷" width="150" />
         <el-table-column prop="startTime" label="开始时间" width="180" />
         <el-table-column prop="endTime" label="结束时间" width="180" />
@@ -72,11 +66,6 @@
       <el-form :model="examForm" :rules="rules" ref="examFormRef" label-width="100px">
         <el-form-item label="考试名称" prop="name">
           <el-input v-model="examForm.name" placeholder="请输入考试名称" />
-        </el-form-item>
-        <el-form-item label="课程" prop="courseId">
-          <el-select v-model="examForm.courseId" placeholder="请选择课程" style="width: 100%">
-            <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id" />
-          </el-select>
         </el-form-item>
         <el-form-item label="试卷" prop="paperId">
           <el-select v-model="examForm.paperId" placeholder="请选择试卷" style="width: 100%">
@@ -120,7 +109,6 @@ import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import examApi from '@/api/exam'
-import courseApi from '@/api/course'
 import paperApi from '@/api/paper'
 
 const userStore = useUserStore()
@@ -131,12 +119,10 @@ const examList = ref([])
 const total = ref(0)
 const pageNum = ref(1)
 const pageSize = ref(10)
-const courses = ref([])
 const papers = ref([])
 
 const searchForm = ref({
   name: '',
-  courseId: null,
   status: null
 })
 
@@ -145,7 +131,6 @@ const dialogTitle = ref('新增考试')
 const examForm = ref({
   id: null,
   name: '',
-  courseId: null,
   paperId: null,
   startTime: '',
   endTime: '',
@@ -155,7 +140,6 @@ const examForm = ref({
 
 const rules = {
   name: [{ required: true, message: '请输入考试名称', trigger: 'blur' }],
-  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
   paperId: [{ required: true, message: '请选择试卷', trigger: 'change' }],
   startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
   endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
@@ -166,28 +150,23 @@ const examFormRef = ref(null)
 
 onMounted(() => {
   loadExamList()
-  loadCourses()
   loadPapers()
 })
 
 const loadExamList = async () => {
   loading.value = true
   try {
-    // 教师只能查看自己课程的考试
     const res = await examApi.search(searchForm.value)
-    examList.value = res.data?.filter(e => e.teacherId === userInfo.value.id) || []
+    let list = res.data?.filter(e => e.teacherId === userInfo.value.id) || []
+    
+    if (searchForm.value.status !== null && searchForm.value.status !== undefined) {
+      list = list.filter(e => getCurrentStatus(e) === searchForm.value.status)
+    }
+    
+    examList.value = list
     total.value = examList.value.length || 0
   } finally {
     loading.value = false
-  }
-}
-
-const loadCourses = async () => {
-  try {
-    const res = await courseApi.getByTeacherId(userInfo.value.id)
-    courses.value = res.data || []
-  } catch (error) {
-    console.error('加载课程失败', error)
   }
 }
 
@@ -208,7 +187,6 @@ const handleSearch = () => {
 const handleReset = () => {
   searchForm.value = {
     name: '',
-    courseId: null,
     status: null
   }
   handleSearch()
@@ -229,7 +207,6 @@ const handleAdd = () => {
   examForm.value = {
     id: null,
     name: '',
-    courseId: null,
     paperId: null,
     startTime: '',
     endTime: '',
@@ -249,7 +226,6 @@ const handleSave = async () => {
   await examFormRef.value.validate()
   loading.value = true
   try {
-    // 格式化时间
     const formData = { ...examForm.value }
     if (formData.startTime) {
       formData.startTime = formatDateTime(formData.startTime)
@@ -258,15 +234,9 @@ const handleSave = async () => {
       formData.endTime = formatDateTime(formData.endTime)
     }
     
-    // 添加教师信息
     formData.teacherId = userInfo.value.id
     formData.teacherName = userInfo.value.name
     
-    // 获取课程和试卷名称
-    const course = courses.value.find(c => c.id === formData.courseId)
-    if (course) {
-      formData.courseName = course.name
-    }
     const paper = papers.value.find(p => p.id === formData.paperId)
     if (paper) {
       formData.paperName = paper.name

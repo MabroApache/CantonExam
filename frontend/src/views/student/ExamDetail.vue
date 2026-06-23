@@ -14,15 +14,12 @@
       </template>
       
       <div class="exam-info">
-        <p><strong>课程：</strong>{{ examInfo.courseName }}</p>
         <p><strong>总分：</strong>{{ examInfo.totalScore }}分</p>
         <p><strong>时长：</strong>{{ examInfo.duration }}分钟</p>
       </div>
       
-      <!-- 答题区域 -->
       <div class="question-area">
         <el-tabs v-model="activeTab">
-          <!-- 单选题 -->
           <el-tab-pane label="单选题" name="single" v-if="singleQuestions.length > 0">
             <div class="question-item" v-for="(question, index) in singleQuestions" :key="question.id">
               <div class="question-title">
@@ -39,7 +36,6 @@
             </div>
           </el-tab-pane>
           
-          <!-- 多选题 -->
           <el-tab-pane label="多选题" name="multi" v-if="multiQuestions.length > 0">
             <div class="question-item" v-for="(question, index) in multiQuestions" :key="question.id">
               <div class="question-title">
@@ -52,13 +48,10 @@
                 <el-checkbox label="B" v-if="question.optionB">B. {{ question.optionB }}</el-checkbox>
                 <el-checkbox label="C" v-if="question.optionC">C. {{ question.optionC }}</el-checkbox>
                 <el-checkbox label="D" v-if="question.optionD">D. {{ question.optionD }}</el-checkbox>
-                <el-checkbox label="E" v-if="question.optionE">E. {{ question.optionE }}</el-checkbox>
-                <el-checkbox label="F" v-if="question.optionF">F. {{ question.optionF }}</el-checkbox>
               </el-checkbox-group>
             </div>
           </el-tab-pane>
           
-          <!-- 判断题 -->
           <el-tab-pane label="判断题" name="judge" v-if="judgeQuestions.length > 0">
             <div class="question-item" v-for="(question, index) in judgeQuestions" :key="question.id">
               <div class="question-title">
@@ -73,7 +66,6 @@
             </div>
           </el-tab-pane>
           
-          <!-- 填空题 -->
           <el-tab-pane label="填空题" name="fill" v-if="fillQuestions.length > 0">
             <div class="question-item" v-for="(question, index) in fillQuestions" :key="question.id">
               <div class="question-title">
@@ -85,7 +77,6 @@
             </div>
           </el-tab-pane>
           
-          <!-- 简答题 -->
           <el-tab-pane label="简答题" name="essay" v-if="essayQuestions.length > 0">
             <div class="question-item" v-for="(question, index) in essayQuestions" :key="question.id">
               <div class="question-title">
@@ -99,7 +90,6 @@
         </el-tabs>
       </div>
       
-      <!-- 提交按钮 -->
       <div class="submit-area">
         <el-button type="primary" size="large" @click="handleSubmit" :loading="submitting">提交试卷</el-button>
       </div>
@@ -124,7 +114,6 @@ const userInfo = computed(() => userStore.userInfo)
 
 const examId = Number(route.params.examId)
 
-// 检查examId是否有效
 if (isNaN(examId) || examId <= 0) {
   console.error('无效的examId:', route.params.examId)
   ElMessage.error('无效的考试ID')
@@ -143,7 +132,6 @@ const submitting = ref(false)
 const remainingTime = ref(0)
 let timer = null
 
-// 按题型分类题目
 const singleQuestions = computed(() => questions.value.filter(q => q.type === 1))
 const multiQuestions = computed(() => questions.value.filter(q => q.type === 2))
 const judgeQuestions = computed(() => questions.value.filter(q => q.type === 3))
@@ -162,7 +150,6 @@ const getTypeName = (type) => {
 }
 
 onMounted(async () => {
-  // 先禁用侧边栏导航（进入考试页面就禁用）
   userStore.setSidebarDisabled(true)
   
   console.log('进入考试页面，examId:', examId)
@@ -189,7 +176,6 @@ onUnmounted(() => {
   if (timer) {
     clearInterval(timer)
   }
-  // 恢复侧边栏导航
   userStore.setSidebarDisabled(false)
 })
 
@@ -202,20 +188,17 @@ const loadExamInfo = async () => {
   examInfo.value = res.data
   console.log('考试信息:', examInfo.value)
   
-  // 获取试卷题目关系
   const paperRes = await paperApi.getQuestions(examInfo.value.paperId)
   console.log('试卷题目API返回:', paperRes)
   
   paperQuestions.value = paperRes.data || []
   console.log('试卷题目列表:', paperQuestions.value)
   
-  // 获取每个题目的详细信息
   const questionDetails = await Promise.all(
     paperQuestions.value.map(pq => questionApi.getById(pq.questionId))
   )
   console.log('题目详情:', questionDetails)
   
-  // 构建题目列表
   questions.value = paperQuestions.value.map((pq, index) => {
     const q = questionDetails[index]?.data || {}
     return {
@@ -226,14 +209,11 @@ const loadExamInfo = async () => {
       optionA: q.optionA,
       optionB: q.optionB,
       optionC: q.optionC,
-      optionD: q.optionD,
-      optionE: q.optionE,
-      optionF: q.optionF
+      optionD: q.optionD
     }
   })
   console.log('构建后的题目列表:', questions.value)
   
-  // 初始化答案对象
   questions.value.forEach(q => {
     if (q.type === 2) {
       multiAnswers.value[q.id] = []
@@ -242,7 +222,6 @@ const loadExamInfo = async () => {
     }
   })
   
-  // 自动切换到有题目的第一个tab
   if (judgeQuestions.value.length > 0) activeTab.value = 'judge'
   else if (singleQuestions.value.length > 0) activeTab.value = 'single'
   else if (multiQuestions.value.length > 0) activeTab.value = 'multi'
@@ -253,7 +232,6 @@ const loadExamInfo = async () => {
 const loadExamRecord = async () => {
   console.log('开始加载考试记录')
   
-  // 检查是否已经有考试记录
   const recordId = localStorage.getItem('currentRecordId')
   console.log('localStorage中的recordId:', recordId)
   
@@ -263,7 +241,6 @@ const loadExamRecord = async () => {
       examRecord.value = res.data
       console.log('已存在的考试记录:', examRecord.value)
     } catch (error) {
-      // 如果记录不存在，创建新记录
       console.log('已存在的记录不存在，准备创建新记录:', error)
       examRecord.value = null
     }
@@ -277,7 +254,6 @@ const loadExamRecord = async () => {
       studentName: userInfo.value.name
     })
     
-    // 创建新的考试记录
     const res = await recordApi.startExam({
       examId: examId,
       paperId: examInfo.value.paperId,
@@ -290,7 +266,6 @@ const loadExamRecord = async () => {
     localStorage.setItem('currentRecordId', res.data.id)
   }
   
-  // 计算剩余时间（从记录的开始时间计算）
   const startTime = new Date(examRecord.value.startTime)
   const now = new Date()
   const elapsedSeconds = Math.floor((now - startTime) / 1000)
@@ -331,11 +306,10 @@ const handleSubmit = () => {
   }).then(async () => {
     submitting.value = true
     try {
-      // 构建答案列表
       const answerList = questions.value.map(q => {
         let answer = ''
         if (q.type === 2) {
-          answer = multiAnswers.value[q.id]?.join(',') || ''
+          answer = multiAnswers.value[q.id]?.sort().join('') || ''
         } else {
           answer = answers.value[q.id] || ''
         }
