@@ -298,12 +298,36 @@ const loadQuestionTypes = async () => {
   }
 }
 
+const parseTags = (tagsStr) => {
+  if (!tagsStr) return []
+  if (Array.isArray(tagsStr)) return tagsStr
+  if (typeof tagsStr === 'string') {
+    if (tagsStr.startsWith('[')) {
+      try {
+        return JSON.parse(tagsStr)
+      } catch (e) {
+        return tagsStr.split(',').map(t => t.trim()).filter(t => t)
+      }
+    }
+    return tagsStr.split(',').map(t => t.trim()).filter(t => t)
+  }
+  return []
+}
+
+const tagsToString = (tagsArr) => {
+  if (!tagsArr || !Array.isArray(tagsArr) || tagsArr.length === 0) return ''
+  return tagsArr.join(',')
+}
+
 const loadQuestionList = async () => {
   loading.value = true
   try {
     const res = await questionApi.search(searchForm.value)
-    questionList.value = res.data || []
-    // 提取所有标签
+    const list = res.data || []
+    list.forEach(q => {
+      q.tags = parseTags(q.tags)
+    })
+    questionList.value = list
     const tagsSet = new Set()
     questionList.value.forEach(q => {
       if (q.tags && Array.isArray(q.tags)) {
@@ -370,7 +394,10 @@ const handleAdd = () => {
 
 const handleEdit = (row) => {
   dialogTitle.value = '编辑题目'
-  questionForm.value = { ...row }
+  questionForm.value = { 
+    ...row,
+    tags: parseTags(row.tags)
+  }
   if (currentTypeName.value === '多选题') {
     const answer = row.answer || ''
     multiAnswerOptions.value = answer.split('').filter(c => ['A', 'B', 'C', 'D'].includes(c))
@@ -379,7 +406,10 @@ const handleEdit = (row) => {
 }
 
 const handlePreview = (row) => {
-  previewQuestion.value = row
+  previewQuestion.value = {
+    ...row,
+    tags: parseTags(row.tags)
+  }
   previewVisible.value = true
 }
 
@@ -392,11 +422,15 @@ const handleSave = async () => {
   await questionFormRef.value.validate()
   loading.value = true
   try {
+    const submitData = {
+      ...questionForm.value,
+      tags: tagsToString(questionForm.value.tags)
+    }
     if (questionForm.value.id) {
-      await questionApi.update(questionForm.value)
+      await questionApi.update(submitData)
       ElMessage.success('更新成功')
     } else {
-      await questionApi.add(questionForm.value)
+      await questionApi.add(submitData)
       ElMessage.success('新增成功')
     }
     dialogVisible.value = false

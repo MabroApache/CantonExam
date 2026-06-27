@@ -310,7 +310,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import paperApi from '@/api/paper'
@@ -373,6 +373,36 @@ const autoRules = {
 }
 
 const autoFormRef = ref(null)
+
+watch(() => autoForm.value.singleCount, (newVal) => {
+  if (newVal === 0) {
+    autoForm.value.singleTotalScore = 0
+  }
+})
+
+watch(() => autoForm.value.multiCount, (newVal) => {
+  if (newVal === 0) {
+    autoForm.value.multiTotalScore = 0
+  }
+})
+
+watch(() => autoForm.value.judgeCount, (newVal) => {
+  if (newVal === 0) {
+    autoForm.value.judgeTotalScore = 0
+  }
+})
+
+watch(() => autoForm.value.fillCount, (newVal) => {
+  if (newVal === 0) {
+    autoForm.value.fillTotalScore = 0
+  }
+})
+
+watch(() => autoForm.value.essayCount, (newVal) => {
+  if (newVal === 0) {
+    autoForm.value.essayTotalScore = 0
+  }
+})
 
 const viewDialogVisible = ref(false)
 const viewPaper = ref({})
@@ -519,11 +549,30 @@ const loadPaperList = async () => {
   }
 }
 
+const parseTags = (tagsStr) => {
+  if (!tagsStr) return []
+  if (Array.isArray(tagsStr)) return tagsStr
+  if (typeof tagsStr === 'string') {
+    if (tagsStr.startsWith('[')) {
+      try {
+        return JSON.parse(tagsStr)
+      } catch (e) {
+        return tagsStr.split(',').map(t => t.trim()).filter(t => t)
+      }
+    }
+    return tagsStr.split(',').map(t => t.trim()).filter(t => t)
+  }
+  return []
+}
+
 const loadQuestions = async () => {
   try {
     const res = await questionApi.getList()
-    allQuestions.value = res.data || []
-    // 提取所有标签
+    const list = res.data || []
+    list.forEach(q => {
+      q.tags = parseTags(q.tags)
+    })
+    allQuestions.value = list
     const tagsSet = new Set()
     allQuestions.value.forEach(q => {
       if (q.tags && Array.isArray(q.tags)) {
