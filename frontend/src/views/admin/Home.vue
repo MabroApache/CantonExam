@@ -9,8 +9,8 @@
               <el-icon><User /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-value">{{ stats.teacherCount }}</div>
-              <div class="stat-label">教师总数</div>
+              <div class="stat-value">{{ stats.creatorCount }}</div>
+              <div class="stat-label">出题人总数</div>
             </div>
           </div>
         </el-card>
@@ -22,8 +22,8 @@
               <el-icon><User /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-value">{{ stats.studentCount }}</div>
-              <div class="stat-label">学生总数</div>
+              <div class="stat-value">{{ stats.candidateCount }}</div>
+              <div class="stat-label">考生总数</div>
             </div>
           </div>
         </el-card>
@@ -44,28 +44,8 @@
     </el-row>
     
     <el-row :gutter="20" style="margin-top: 20px">
-      <!-- 系统公告 -->
-      <el-col :span="12">
-        <el-card>
-          <template #header>
-            <div class="card-header">
-              <span>系统公告</span>
-              <el-button type="text" @click="goNotice">查看更多</el-button>
-            </div>
-          </template>
-          <el-timeline>
-            <el-timeline-item v-for="notice in notices" :key="notice.id" :timestamp="notice.publishTime" placement="top">
-              <el-card>
-                <h4>{{ notice.title }}</h4>
-                <p>{{ notice.content }}</p>
-              </el-card>
-            </el-timeline-item>
-          </el-timeline>
-        </el-card>
-      </el-col>
-      
       <!-- 考试安排 -->
-      <el-col :span="12">
+      <el-col :span="24">
         <el-card>
           <template #header>
             <div class="card-header">
@@ -75,7 +55,9 @@
           </template>
           <el-table :data="exams" style="width: 100%">
             <el-table-column prop="name" label="考试名称" />
+            <el-table-column prop="paperName" label="试卷名称" />
             <el-table-column prop="startTime" label="开始时间" width="180" />
+            <el-table-column prop="endTime" label="结束时间" width="180" />
             <el-table-column prop="status" label="状态" width="100">
               <template #default="{ row }">
                 <el-tag :type="row.status === 0 ? 'info' : row.status === 1 ? 'success' : 'danger'">
@@ -93,45 +75,36 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import noticeApi from '@/api/notice'
 import examApi from '@/api/exam'
-import teacherApi from '@/api/teacher'
-import studentApi from '@/api/student'
+import creatorApi from '@/api/creator'
+import candidateApi from '@/api/candidate'
 
 const router = useRouter()
 
 const stats = ref({
-  teacherCount: 0,
-  studentCount: 0,
+  creatorCount: 0,
+  candidateCount: 0,
   examCount: 0
 })
 
-const notices = ref([])
 const exams = ref([])
 
 onMounted(async () => {
   // 获取统计数据
   try {
-    const teachers = await teacherApi.getList()
-    stats.value.teacherCount = teachers.data?.length || 0
+    const creators = await creatorApi.getList()
+    stats.value.creatorCount = creators.data?.length || 0
     
-    const students = await studentApi.getList()
-    stats.value.studentCount = students.data?.length || 0
+    const candidates = await candidateApi.getList()
+    stats.value.candidateCount = candidates.data?.length || 0
     
     const examList = await examApi.getList()
     stats.value.examCount = examList.data?.length || 0
     exams.value = examList.data?.slice(0, 5) || []
-    
-    const noticeList = await noticeApi.getPublished()
-    notices.value = noticeList.data?.slice(0, 3) || []
   } catch (error) {
     console.error('获取数据失败', error)
   }
 })
-
-const goNotice = () => {
-  router.push('/admin/notice')
-}
 
 const goExam = () => {
   router.push('/admin/exam')

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cantonfair.exam.mapper.CandidateAnswerMapper">
+
+    <resultMap id="BaseResultMap" type="com.cantonfair.exam.entity.CandidateAnswer">
+        <id column="id" property="id"/>
+        <result column="record_id" property="recordId"/>
+        <result column="question_id" property="questionId"/>
+        <result column="type_id" property="typeId"/>
+        <result column="type_name" property="typeName"/>
+        <result column="title" property="title"/>
+        <result column="option_a" property="optionA"/>
+        <result column="option_b" property="optionB"/>
+        <result column="option_c" property="optionC"/>
+        <result column="option_d" property="optionD"/>
+        <result column="candidate_answer" property="candidateAnswer"/>
+        <result column="correct_answer" property="correctAnswer"/>
+        <result column="score" property="score"/>
+        <result column="get_score" property="getScore"/>
+        <result column="is_correct" property="isCorrect"/>
+        <result column="comment" property="comment"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ca.id, ca.record_id, ca.question_id, ca.type_id, ca.candidate_answer, ca.correct_answer, ca.score, ca.get_score, ca.is_correct, ca.comment, ca.create_time, ca.update_time,
+        qt.name as type_name,
+        q.title, q.option_a, q.option_b, q.option_c, q.option_d
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from candidate_answer ca
+        left join question_type qt on ca.type_id = qt.id
+        left join question q on ca.question_id = q.id
+        where ca.id = #{id}
+    </select>
+
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from candidate_answer ca
+        left join question_type qt on ca.type_id = qt.id
+        left join question q on ca.question_id = q.id
+        where ca.record_id = #{recordId}
+        order by ca.id asc
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into candidate_answer(record_id, question_id, type_id, candidate_answer, correct_answer, score, get_score, is_correct, comment)
+        values(#{recordId}, #{questionId}, #{typeId}, #{candidateAnswer}, #{correctAnswer}, #{score}, #{getScore}, #{isCorrect}, #{comment})
+    </insert>
+
+    <insert id="insertBatch">
+        insert into candidate_answer(record_id, question_id, type_id, candidate_answer, correct_answer, score, get_score, is_correct, comment)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.recordId}, #{item.questionId}, #{item.typeId}, #{item.candidateAnswer}, #{item.correctAnswer}, #{item.score}, #{item.getScore}, #{item.isCorrect}, #{item.comment})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        update candidate_answer
+        <set>
+            <if test="candidateAnswer != null">candidate_answer = #{candidateAnswer},</if>
+            <if test="getScore != null">get_score = #{getScore},</if>
+            <if test="isCorrect != null">is_correct = #{isCorrect},</if>
+            <if test="comment != null">comment = #{comment},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByRecordId">
+        delete from candidate_answer where record_id = #{recordId}
+    </delete>
+
+</mapper>

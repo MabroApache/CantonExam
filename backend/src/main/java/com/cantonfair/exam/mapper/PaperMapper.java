@@ -18,7 +18,9 @@ public interface PaperMapper {
     
     List<Paper> selectByCondition(Paper paper);
     
-    List<Paper> selectByTeacherId(Long teacherId);
+    List<Paper> selectByCreatorId(Long creatorId);
+    
+    List<Paper> selectByDepartmentId(Long departmentId);
     
     int insert(Paper paper);
     

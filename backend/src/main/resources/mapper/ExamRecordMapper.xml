@@ -8,8 +8,8 @@
         <result column="exam_name" property="examName"/>
         <result column="paper_id" property="paperId"/>
         <result column="paper_name" property="paperName"/>
-        <result column="student_id" property="studentId"/>
-        <result column="student_name" property="studentName"/>
+        <result column="candidate_id" property="candidateId"/>
+        <result column="candidate_name" property="candidateName"/>
         <result column="start_time" property="startTime"/>
         <result column="submit_time" property="submitTime"/>
         <result column="total_score" property="totalScore"/>
@@ -21,9 +21,9 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        er.id, er.exam_id, er.paper_id, er.student_id, er.start_time, er.submit_time,
+        er.id, er.exam_id, er.paper_id, er.candidate_id, er.start_time, er.submit_time,
         er.total_score, er.objective_score, er.subjective_score, er.status, er.create_time, er.update_time,
-        e.name as exam_name, p.name as paper_name, s.name as student_name
+        e.name as exam_name, p.name as paper_name, c.name as candidate_name
     </sql>
 
     <select id="selectById" resultMap="BaseResultMap">
@@ -31,7 +31,7 @@
         from exam_record er
         left join exam e on er.exam_id = e.id
         left join paper p on er.paper_id = p.id
-        left join student s on er.student_id = s.id
+        left join candidate c on er.candidate_id = c.id
         where er.id = #{id}
     </select>
 
@@ -40,7 +40,7 @@
         from exam_record er
         left join exam e on er.exam_id = e.id
         left join paper p on er.paper_id = p.id
-        left join student s on er.student_id = s.id
+        left join candidate c on er.candidate_id = c.id
         order by er.create_time desc
     </select>
 
@@ -49,36 +49,36 @@
         from exam_record er
         left join exam e on er.exam_id = e.id
         left join paper p on er.paper_id = p.id
-        left join student s on er.student_id = s.id
+        left join candidate c on er.candidate_id = c.id
         <where>
             <if test="examId != null">
                 and er.exam_id = #{examId}
             </if>
-            <if test="studentId != null">
-                and er.student_id = #{studentId}
+            <if test="candidateId != null">
+                and er.candidate_id = #{candidateId}
             </if>
             <if test="status != null">
                 and er.status = #{status}
             </if>
-            <if test="teacherId != null">
-                and e.teacher_id = #{teacherId}
+            <if test="departmentId != null">
+                and p.department_id = #{departmentId}
             </if>
         </where>
         order by er.create_time desc
     </select>
 
-    <select id="selectByExamAndStudent" resultMap="BaseResultMap">
+    <select id="selectByExamAndCandidate" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from exam_record er
         left join exam e on er.exam_id = e.id
         left join paper p on er.paper_id = p.id
-        left join student s on er.student_id = s.id
-        where er.exam_id = #{examId} and er.student_id = #{studentId}
+        left join candidate c on er.candidate_id = c.id
+        where er.exam_id = #{examId} and er.candidate_id = #{candidateId}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into exam_record(exam_id, paper_id, student_id, start_time, submit_time, total_score, objective_score, subjective_score, status)
-        values(#{examId}, #{paperId}, #{studentId}, #{startTime}, #{submitTime}, #{totalScore}, #{objectiveScore}, #{subjectiveScore}, #{status})
+        insert into exam_record(exam_id, paper_id, candidate_id, start_time, submit_time, total_score, objective_score, subjective_score, status)
+        values(#{examId}, #{paperId}, #{candidateId}, #{startTime}, #{submitTime}, #{totalScore}, #{objectiveScore}, #{subjectiveScore}, #{status})
     </insert>
 
     <update id="update">

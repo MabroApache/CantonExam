@@ -20,9 +20,14 @@ public interface QuestionMapper {
     
     List<Question> selectByTypeId(Long typeId);
     
-    List<Question> selectByTeacherId(Long teacherId);
+    List<Question> selectByCreatorId(Long creatorId);
     
-    List<Question> selectRandomQuestions(@Param("typeId") Long typeId, 
+    List<Question> selectByDepartmentId(Long departmentId);
+    
+    List<Question> selectByTypeIdAndDepartmentId(@Param("typeId") Long typeId,
+                                                  @Param("departmentId") Long departmentId);
+    
+    List<Question> selectRandomQuestions(@Param("typeId") Long typeId,
                                          @Param("count") Integer count);
     
     int insert(Question question);

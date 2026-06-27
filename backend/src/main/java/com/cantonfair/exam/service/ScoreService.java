@@ -32,12 +32,12 @@ public class ScoreService {
         return scoreMapper.selectByExamId(examId);
     }
 
-    public List<Score> getByStudentId(Long studentId) {
-        return scoreMapper.selectByStudentId(studentId);
+    public List<Score> getByCandidateId(Long CandidateId) {
+        return scoreMapper.selectByCandidateId(CandidateId);
     }
 
-    public Score getByExamAndStudent(Long examId, Long studentId) {
-        return scoreMapper.selectByExamAndStudent(examId, studentId);
+    public Score getByExamAndCandidate(Long examId, Long CandidateId) {
+        return scoreMapper.selectByExamAndCandidate(examId, CandidateId);
     }
 
     public void delete(Long id) {

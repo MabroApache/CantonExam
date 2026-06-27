@@ -9,17 +9,17 @@ export const useUserStore = defineStore('user', () => {
 
   const setToken = (newToken) => {
     token.value = newToken
-    localStorage.setItem('token', newToken)
+    sessionStorage.setItem('token', newToken)
   }
 
   const setUserInfo = (info) => {
     userInfo.value = info
-    localStorage.setItem('userInfo', JSON.stringify(info))
+    sessionStorage.setItem('userInfo', JSON.stringify(info))
   }
 
   const setRole = (newRole) => {
     role.value = newRole
-    localStorage.setItem('role', newRole)
+    sessionStorage.setItem('role', newRole)
   }
 
   const setSidebarDisabled = (disabled) => {
@@ -31,15 +31,15 @@ export const useUserStore = defineStore('user', () => {
     userInfo.value = {}
     role.value = ''
     sidebarDisabled.value = false
-    localStorage.removeItem('token')
-    localStorage.removeItem('userInfo')
-    localStorage.removeItem('role')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('userInfo')
+    sessionStorage.removeItem('role')
   }
 
   const initUser = () => {
-    const savedToken = localStorage.getItem('token')
-    const savedUserInfo = localStorage.getItem('userInfo')
-    const savedRole = localStorage.getItem('role')
+    const savedToken = sessionStorage.getItem('token')
+    const savedUserInfo = sessionStorage.getItem('userInfo')
+    const savedRole = sessionStorage.getItem('role')
     
     if (savedToken) {
       token.value = savedToken
@@ -67,8 +67,8 @@ export const useUserStore = defineStore('user', () => {
     initUser
   }
 }, {
-  // 不持久化 sidebarDisabled，只在内存中保存
   persist: {
+    storage: sessionStorage,
     paths: ['token', 'userInfo', 'role']
   }
 })

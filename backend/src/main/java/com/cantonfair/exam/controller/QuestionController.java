@@ -6,6 +6,7 @@ import com.cantonfair.exam.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -22,26 +23,30 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public Result<List<Question>> getAll() {
-        List<Question> questions = questionService.getAll();
+    public Result<List<Question>> getAll(HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        List<Question> questions = questionService.getByDepartmentId(departmentId);
         return Result.success(questions);
     }
 
     @GetMapping("/search")
-    public Result<List<Question>> getByCondition(Question question) {
+    public Result<List<Question>> getByCondition(Question question, HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        question.setDepartmentId(departmentId);
         List<Question> questions = questionService.getByCondition(question);
         return Result.success(questions);
     }
 
     @GetMapping("/type/{typeId}")
-    public Result<List<Question>> getByTypeId(@PathVariable Long typeId) {
-        List<Question> questions = questionService.getByTypeId(typeId);
+    public Result<List<Question>> getByTypeId(@PathVariable Long typeId, HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        List<Question> questions = questionService.getByTypeIdAndDepartmentId(typeId, departmentId);
         return Result.success(questions);
     }
 
-    @GetMapping("/teacher/{teacherId}")
-    public Result<List<Question>> getByTeacherId(@PathVariable Long teacherId) {
-        List<Question> questions = questionService.getByTeacherId(teacherId);
+    @GetMapping("/creator/{creatorId}")
+    public Result<List<Question>> getByCreatorId(@PathVariable Long creatorId) {
+        List<Question> questions = questionService.getByCreatorId(creatorId);
         return Result.success(questions);
     }
 

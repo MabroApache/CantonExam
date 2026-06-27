@@ -1,53 +1,53 @@
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\StudentService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\QuestionController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\exception\BusinessException.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Admin.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\AdminController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\NoticeMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Student.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\ExamRecord.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ExamMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Paper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\interceptor\JwtInterceptor.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Notice.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\NoticeService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ScoreController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\config\WebConfig.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\NoticeController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\TeacherController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ExamRecordService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\common\Result.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\QuestionTypeService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ScoreService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\common\PageResult.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\QuestionTypeMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\StudentMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\PaperQuestion.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ExamService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ExamController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\ExamSystemApplication.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\PaperQuestionMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\util\JwtUtil.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\AdminMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\PaperService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\PaperController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\PaperMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\exception\GlobalExceptionHandler.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Teacher.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\QuestionService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\config\CorsConfig.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ExamRecordController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ExamRecordMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Score.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ScoreMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\AdminService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\TeacherMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Question.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\StudentController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\TeacherService.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Exam.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\StudentAnswerMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\QuestionTypeController.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\QuestionMapper.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\StudentAnswer.java
-D:\CantonFair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\QuestionType.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\QuestionCreatorMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\DepartmentService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\common\Result.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Exam.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ExamMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Paper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Department.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\PaperController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ExamService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ScoreController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\QuestionController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\DepartmentController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\exception\BusinessException.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\QuestionCreatorService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\ExamRecord.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\common\PageResult.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\QuestionTypeService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Question.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\QuestionMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\interceptor\JwtInterceptor.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\CandidateService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\AdminService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\QuestionTypeMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\QuestionService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\AdminController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\DepartmentMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ScoreService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\config\WebConfig.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\util\JwtUtil.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\CandidateController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\PaperQuestionMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Candidate.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\AdminMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\exception\GlobalExceptionHandler.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Score.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Admin.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ExamRecordMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\CandidateMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\CandidateAnswerMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ScoreMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ExamController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\PaperQuestion.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ExamRecordController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\PaperMapper.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\QuestionType.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\PaperService.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\CandidateAnswer.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\QuestionCreator.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\config\CorsConfig.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\QuestionCreatorController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\ExamSystemApplication.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\QuestionTypeController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ExamRecordService.java

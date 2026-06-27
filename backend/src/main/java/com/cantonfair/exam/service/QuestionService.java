@@ -29,8 +29,16 @@ public class QuestionService {
         return questionMapper.selectByTypeId(typeId);
     }
 
-    public List<Question> getByTeacherId(Long teacherId) {
-        return questionMapper.selectByTeacherId(teacherId);
+    public List<Question> getByCreatorId(Long creatorId) {
+        return questionMapper.selectByCreatorId(creatorId);
+    }
+
+    public List<Question> getByDepartmentId(Long departmentId) {
+        return questionMapper.selectByDepartmentId(departmentId);
+    }
+
+    public List<Question> getByTypeIdAndDepartmentId(Long typeId, Long departmentId) {
+        return questionMapper.selectByTypeIdAndDepartmentId(typeId, departmentId);
     }
 
     public List<Question> getRandomQuestions(Long typeId, Integer count) {

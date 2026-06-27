@@ -30,7 +30,7 @@
       <el-table :data="examList" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="考试名称" />
         <el-table-column prop="paperName" label="试卷" width="150" />
-        <el-table-column prop="teacherName" label="教师" width="120" />
+        <el-table-column prop="creatorName" label="创建人" width="120" />
         <el-table-column prop="startTime" label="开始时间" width="180" />
         <el-table-column prop="endTime" label="结束时间" width="180" />
         <el-table-column prop="duration" label="时长(分钟)" width="100" />
@@ -231,8 +231,8 @@ const handleSave = async () => {
     if (paper) {
       formData.paperName = paper.name
       formData.totalScore = paper.totalScore
-      formData.teacherId = paper.teacherId
-      formData.teacherName = paper.teacherName
+      formData.creatorId = paper.creatorId
+      formData.creatorName = paper.creatorName
     }
     
     if (examForm.value.id) {

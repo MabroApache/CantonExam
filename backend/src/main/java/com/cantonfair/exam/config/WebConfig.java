@@ -22,10 +22,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/admin/login",
-                        "/teacher/login",
-                        "/teacher/register",
-                        "/student/login",
-                        "/student/register",
+                        "/creator/login",
+                        "/creator/register",
+                        "/candidate/login",
+                        "/candidate/register",
                         "/files/**",
                         "/error"
                 );

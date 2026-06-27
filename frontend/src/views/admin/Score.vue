@@ -12,8 +12,8 @@
         <el-form-item label="考试名称">
           <el-input v-model="searchForm.examName" placeholder="请输入考试名称" clearable />
         </el-form-item>
-        <el-form-item label="学生姓名">
-          <el-input v-model="searchForm.studentName" placeholder="请输入学生姓名" clearable />
+        <el-form-item label="考生姓名">
+          <el-input v-model="searchForm.candidateName" placeholder="请输入考生姓名" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -24,7 +24,7 @@
       <!-- 成绩列表 -->
       <el-table :data="scoreList" style="width: 100%" v-loading="loading">
         <el-table-column prop="examName" label="考试名称" />
-        <el-table-column prop="studentName" label="学生姓名" width="120" />
+        <el-table-column prop="candidateName" label="考生姓名" width="120" />
         <el-table-column prop="totalScore" label="总分" width="100">
           <template #default="{ row }">
             <span :style="{ color: row.totalScore >= 60 ? '#67C23A' : '#F56C6C', fontWeight: 'bold' }">
@@ -60,7 +60,7 @@
     <el-dialog title="成绩详情" v-model="viewDialogVisible" width="800px">
       <el-descriptions :column="2" border>
         <el-descriptions-item label="考试名称">{{ viewScore.examName }}</el-descriptions-item>
-        <el-descriptions-item label="学生姓名">{{ viewScore.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="考生姓名">{{ viewScore.candidateName }}</el-descriptions-item>
         <el-descriptions-item label="总分">
           <span :style="{ color: viewScore.totalScore >= 60 ? '#67C23A' : '#F56C6C', fontWeight: 'bold' }">
             {{ viewScore.totalScore }}分
@@ -87,7 +87,7 @@
           <div>D. {{ answer.optionD }}</div>
         </div>
         <div class="answer-content">
-          <p><strong>学生答案：</strong>{{ answer.studentAnswer || '未作答' }}</p>
+          <p><strong>考生答案：</strong>{{ answer.candidateAnswer || '未作答' }}</p>
           <p><strong>正确答案：</strong>{{ answer.correctAnswer }}</p>
           <p>
             <strong>得分：</strong>
@@ -118,7 +118,7 @@ const pageSize = ref(10)
 
 const searchForm = ref({
   examName: '',
-  studentName: ''
+  candidateName: ''
 })
 
 const viewDialogVisible = ref(false)
@@ -148,7 +148,7 @@ const handleSearch = () => {
 const handleReset = () => {
   searchForm.value = {
     examName: '',
-    studentName: ''
+    candidateName: ''
   }
   handleSearch()
 }
@@ -166,7 +166,7 @@ const handleCurrentChange = (val) => {
 const handleView = async (row) => {
   viewScore.value = row
   try {
-    const res = await recordApi.getByExamId(row.examId, row.studentId)
+    const res = await recordApi.getByExamId(row.examId, row.candidateId)
     answerList.value = res.data || []
     viewDialogVisible.value = true
   } catch (error) {

@@ -8,8 +8,8 @@
         <result column="exam_name" property="examName"/>
         <result column="paper_id" property="paperId"/>
         <result column="paper_name" property="paperName"/>
-        <result column="student_id" property="studentId"/>
-        <result column="student_name" property="studentName"/>
+        <result column="candidate_id" property="candidateId"/>
+        <result column="candidate_name" property="candidateName"/>
         <result column="total_score" property="totalScore"/>
         <result column="objective_score" property="objectiveScore"/>
         <result column="subjective_score" property="subjectiveScore"/>
@@ -20,8 +20,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        sc.id, sc.exam_id, sc.paper_id, sc.student_id, sc.total_score, sc.objective_score, sc.subjective_score, sc.rank, sc.submit_time, sc.create_time, sc.update_time,
-        e.name as exam_name, p.name as paper_name, s.name as student_name
+        sc.id, sc.exam_id, sc.paper_id, sc.candidate_id, sc.total_score, sc.objective_score, sc.subjective_score, sc.`rank`, sc.submit_time, sc.create_time, sc.update_time,
+        e.name as exam_name, p.name as paper_name, c.name as candidate_name
     </sql>
 
     <select id="selectById" resultMap="BaseResultMap">
@@ -29,7 +29,7 @@
         from score sc
         left join exam e on sc.exam_id = e.id
         left join paper p on sc.paper_id = p.id
-        left join student s on sc.student_id = s.id
+        left join candidate c on sc.candidate_id = c.id
         where sc.id = #{id}
     </select>
 
@@ -38,7 +38,7 @@
         from score sc
         left join exam e on sc.exam_id = e.id
         left join paper p on sc.paper_id = p.id
-        left join student s on sc.student_id = s.id
+        left join candidate c on sc.candidate_id = c.id
         order by sc.create_time desc
     </select>
 
@@ -47,13 +47,16 @@
         from score sc
         left join exam e on sc.exam_id = e.id
         left join paper p on sc.paper_id = p.id
-        left join student s on sc.student_id = s.id
+        left join candidate c on sc.candidate_id = c.id
         <where>
             <if test="examId != null">
                 and sc.exam_id = #{examId}
             </if>
-            <if test="studentId != null">
-                and sc.student_id = #{studentId}
+            <if test="candidateId != null">
+                and sc.candidate_id = #{candidateId}
+            </if>
+            <if test="departmentId != null">
+                and p.department_id = #{departmentId}
             </if>
         </where>
         order by sc.total_score desc, sc.create_time desc
@@ -64,33 +67,33 @@
         from score sc
         left join exam e on sc.exam_id = e.id
         left join paper p on sc.paper_id = p.id
-        left join student s on sc.student_id = s.id
+        left join candidate c on sc.candidate_id = c.id
         where sc.exam_id = #{examId}
         order by sc.total_score desc
     </select>
 
-    <select id="selectByStudentId" resultMap="BaseResultMap">
+    <select id="selectByCandidateId" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from score sc
         left join exam e on sc.exam_id = e.id
         left join paper p on sc.paper_id = p.id
-        left join student s on sc.student_id = s.id
-        where sc.student_id = #{studentId}
+        left join candidate c on sc.candidate_id = c.id
+        where sc.candidate_id = #{candidateId}
         order by sc.create_time desc
     </select>
 
-    <select id="selectByExamAndStudent" resultMap="BaseResultMap">
+    <select id="selectByExamAndCandidate" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from score sc
         left join exam e on sc.exam_id = e.id
         left join paper p on sc.paper_id = p.id
-        left join student s on sc.student_id = s.id
-        where sc.exam_id = #{examId} and sc.student_id = #{studentId}
+        left join candidate c on sc.candidate_id = c.id
+        where sc.exam_id = #{examId} and sc.candidate_id = #{candidateId}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into score(exam_id, paper_id, student_id, total_score, objective_score, subjective_score, rank, submit_time)
-        values(#{examId}, #{paperId}, #{studentId}, #{totalScore}, #{objectiveScore}, #{subjectiveScore}, #{rank}, #{submitTime})
+        insert into score(exam_id, paper_id, candidate_id, total_score, objective_score, subjective_score, `rank`, submit_time)
+        values(#{examId}, #{paperId}, #{candidateId}, #{totalScore}, #{objectiveScore}, #{subjectiveScore}, #{rank}, #{submitTime})
     </insert>
 
     <update id="update">
@@ -99,7 +102,7 @@
             <if test="totalScore != null">total_score = #{totalScore},</if>
             <if test="objectiveScore != null">objective_score = #{objectiveScore},</if>
             <if test="subjectiveScore != null">subjective_score = #{subjectiveScore},</if>
-            <if test="rank != null">rank = #{rank},</if>
+            <if test="rank != null">`rank` = #{rank},</if>
         </set>
         where id = #{id}
     </update>

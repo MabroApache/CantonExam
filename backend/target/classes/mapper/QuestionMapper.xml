@@ -6,8 +6,10 @@
         <id column="id" property="id"/>
         <result column="type_id" property="typeId"/>
         <result column="type_name" property="typeName"/>
-        <result column="teacher_id" property="teacherId"/>
-        <result column="teacher_name" property="teacherName"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="creator_name" property="creatorName"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="department_name" property="departmentName"/>
         <result column="title" property="title"/>
         <result column="option_a" property="optionA"/>
         <result column="option_b" property="optionB"/>
@@ -15,7 +17,9 @@
         <result column="option_d" property="optionD"/>
         <result column="answer" property="answer"/>
         <result column="analysis" property="analysis"/>
-        <result column="score" property="score"/>
+        <result column="tags" property="tags"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="video_url" property="videoUrl"/>
         <result column="difficulty" property="difficulty"/>
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
@@ -23,9 +27,9 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, type_id, type_name, teacher_id, teacher_name, title, 
-        option_a, option_b, option_c, option_d, answer, analysis, 
-        score, difficulty, status, create_time, update_time
+        id, type_id, type_name, creator_id, creator_name, department_id, department_name, title,
+        option_a, option_b, option_c, option_d, answer, analysis, tags, image_url, video_url,
+        difficulty, status, create_time, update_time
     </sql>
 
     <select id="selectById" resultMap="BaseResultMap">
@@ -47,8 +51,11 @@
             <if test="typeId != null">
                 and type_id = #{typeId}
             </if>
-            <if test="teacherId != null">
-                and teacher_id = #{teacherId}
+            <if test="creatorId != null">
+                and creator_id = #{creatorId}
+            </if>
+            <if test="departmentId != null">
+                and department_id = #{departmentId}
             </if>
             <if test="title != null and title != ''">
                 and title like concat('%', #{title}, '%')
@@ -70,10 +77,24 @@
         order by create_time desc
     </select>
 
-    <select id="selectByTeacherId" resultMap="BaseResultMap">
+    <select id="selectByCreatorId" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from question
-        where teacher_id = #{teacherId} and status = 1
+        where creator_id = #{creatorId} and status = 1
+        order by create_time desc
+    </select>
+
+    <select id="selectByDepartmentId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from question
+        where department_id = #{departmentId} and status = 1
+        order by create_time desc
+    </select>
+
+    <select id="selectByTypeIdAndDepartmentId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from question
+        where type_id = #{typeId} and department_id = #{departmentId} and status = 1
         order by create_time desc
     </select>
 
@@ -86,12 +107,12 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into question(type_id, type_name, teacher_id, teacher_name, 
-        title, option_a, option_b, option_c, option_d, answer, analysis, 
-        score, difficulty, status)
-        values(#{typeId}, #{typeName}, #{teacherId}, #{teacherName}, 
-        #{title}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, 
-        #{answer}, #{analysis}, #{score}, #{difficulty}, #{status})
+        insert into question(type_id, type_name, creator_id, creator_name, department_id, department_name,
+        title, option_a, option_b, option_c, option_d, answer, analysis, tags, image_url, video_url,
+        difficulty, status)
+        values(#{typeId}, #{typeName}, #{creatorId}, #{creatorName}, #{departmentId}, #{departmentName},
+        #{title}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, #{answer}, #{analysis}, #{tags}, #{imageUrl}, #{videoUrl},
+        #{difficulty}, #{status})
     </insert>
 
     <update id="update">
@@ -106,7 +127,9 @@
             <if test="optionD != null">option_d = #{optionD},</if>
             <if test="answer != null">answer = #{answer},</if>
             <if test="analysis != null">analysis = #{analysis},</if>
-            <if test="score != null">score = #{score},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="videoUrl != null">video_url = #{videoUrl},</if>
             <if test="difficulty != null">difficulty = #{difficulty},</if>
             <if test="status != null">status = #{status},</if>
         </set>

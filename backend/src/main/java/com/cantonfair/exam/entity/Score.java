@@ -14,8 +14,9 @@ public class Score implements Serializable {
     private String examName;
     private Long paperId;
     private String paperName;
-    private Long studentId;
-    private String studentName;
+    private Long candidateId;
+    private String candidateName;
+    private Long departmentId;
     private BigDecimal totalScore;
     private BigDecimal objectiveScore;
     private BigDecimal subjectiveScore;

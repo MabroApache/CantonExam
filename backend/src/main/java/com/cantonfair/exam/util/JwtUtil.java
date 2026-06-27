@@ -27,6 +27,10 @@ public class JwtUtil {
      * 生成Token
      */
     public String createToken(Long userId, String username, String role) {
+        return createToken(userId, username, role, null);
+    }
+
+    public String createToken(Long userId, String username, String role, Long departmentId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
         
@@ -34,6 +38,7 @@ public class JwtUtil {
                 .withClaim("userId", userId)
                 .withClaim("username", username)
                 .withClaim("role", role)
+                .withClaim("departmentId", departmentId)
                 .withIssuedAt(now)
                 .withExpiresAt(expiryDate)
                 .sign(Algorithm.HMAC256(secret));
@@ -84,6 +89,18 @@ public class JwtUtil {
         try {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("role").asString();
+        } catch (JWTDecodeException e) {
+            return null;
+        }
+    }
+
+    /**
+     * 从Token中获取部门ID
+     */
+    public Long getDepartmentId(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("departmentId").asLong();
         } catch (JWTDecodeException e) {
             return null;
         }

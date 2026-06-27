@@ -6,6 +6,7 @@ import com.cantonfair.exam.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -31,8 +32,11 @@ public class ScoreController {
      * 查询所有
      */
     @GetMapping("/list")
-    public Result<List<Score>> getAll() {
-        List<Score> scores = scoreService.getAll();
+    public Result<List<Score>> getAll(HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        Score score = new Score();
+        score.setDepartmentId(departmentId);
+        List<Score> scores = scoreService.getByCondition(score);
         return Result.success(scores);
     }
 
@@ -40,7 +44,9 @@ public class ScoreController {
      * 条件查询
      */
     @GetMapping("/search")
-    public Result<List<Score>> getByCondition(Score score) {
+    public Result<List<Score>> getByCondition(Score score, HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        score.setDepartmentId(departmentId);
         List<Score> scores = scoreService.getByCondition(score);
         return Result.success(scores);
     }
@@ -55,11 +61,11 @@ public class ScoreController {
     }
 
     /**
-     * 根据学生ID查询
+     * 根据考生ID查询
      */
-    @GetMapping("/student/{studentId}")
-    public Result<List<Score>> getByStudentId(@PathVariable Long studentId) {
-        List<Score> scores = scoreService.getByStudentId(studentId);
+    @GetMapping("/candidate/{candidateId}")
+    public Result<List<Score>> getByCandidateId(@PathVariable Long candidateId) {
+        List<Score> scores = scoreService.getByCandidateId(candidateId);
         return Result.success(scores);
     }
 

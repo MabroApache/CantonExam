@@ -5,7 +5,7 @@
         <h2>广交会在线考试系统</h2>
         <p>Canton Fair Online Exam System</p>
       </div>
-      
+
       <el-tabs v-model="activeTab" class="login-tabs">
         <!-- 管理员登录 -->
         <el-tab-pane label="管理员登录" name="admin">
@@ -21,51 +21,51 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        
-        <!-- 教师登录 -->
-        <el-tab-pane label="教师登录" name="teacher">
-          <el-form :model="teacherForm" :rules="rules" ref="teacherFormRef">
+
+        <!-- 出题人登录 -->
+        <el-tab-pane label="出题人登录" name="creator">
+          <el-form :model="creatorForm" :rules="rules" ref="creatorFormRef">
             <el-form-item prop="username">
-              <el-input v-model="teacherForm.username" placeholder="请输入用户名" prefix-icon="User" />
+              <el-input v-model="creatorForm.username" placeholder="请输入用户名" prefix-icon="User" />
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="teacherForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password />
+              <el-input v-model="creatorForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="handleTeacherLogin" :loading="loading" style="width: 100%">登录</el-button>
+              <el-button type="primary" @click="handleCreatorLogin" :loading="loading" style="width: 100%">登录</el-button>
             </el-form-item>
             <el-form-item>
               <el-button type="text" @click="showRegisterDialog">没有账号？立即注册</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        
-        <!-- 学生登录 -->
-        <el-tab-pane label="学生登录" name="student">
-          <el-form :model="studentForm" :rules="rules" ref="studentFormRef">
+
+        <!-- 考生登录 -->
+        <el-tab-pane label="考生登录" name="candidate">
+          <el-form :model="candidateForm" :rules="rules" ref="candidateFormRef">
             <el-form-item prop="username">
-              <el-input v-model="studentForm.username" placeholder="请输入用户名/学号" prefix-icon="User" />
+              <el-input v-model="candidateForm.username" placeholder="请输入用户名/学号" prefix-icon="User" />
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="studentForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password />
+              <el-input v-model="candidateForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="handleStudentLogin" :loading="loading" style="width: 100%">登录</el-button>
+              <el-button type="primary" @click="handleCandidateLogin" :loading="loading" style="width: 100%">登录</el-button>
             </el-form-item>
             <el-form-item>
-              <el-button type="text" @click="showStudentRegisterDialog">没有账号？立即注册</el-button>
+              <el-button type="text" @click="showCandidateRegisterDialog">没有账号？立即注册</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
       </el-tabs>
-      
+
       <div class="login-footer">
         <p>© 2024 广交会在线考试系统</p>
       </div>
     </div>
-    
-    <!-- 教师注册对话框 -->
-    <el-dialog title="教师注册" v-model="registerVisible" width="500px">
+
+    <!-- 出题人注册对话框 -->
+    <el-dialog title="出题人注册" v-model="registerVisible" width="500px">
       <el-form :model="registerForm" :rules="registerRules" ref="registerFormRef">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="registerForm.username" placeholder="请输入用户名" />
@@ -88,11 +88,10 @@
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="registerForm.email" placeholder="请输入邮箱" />
         </el-form-item>
-        <el-form-item label="所属部门">
-          <el-input v-model="registerForm.department" placeholder="请输入所属部门" />
-        </el-form-item>
-        <el-form-item label="职称">
-          <el-input v-model="registerForm.title" placeholder="请输入职称" />
+        <el-form-item label="所属部门" prop="departmentId">
+          <el-select v-model="registerForm.departmentId" placeholder="请选择所属部门" style="width: 100%">
+            <el-option v-for="dept in departmentList" :key="dept.id" :label="dept.name" :value="dept.id" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -100,48 +99,49 @@
         <el-button type="primary" @click="handleRegister" :loading="loading">注册</el-button>
       </template>
     </el-dialog>
-    
-    <!-- 学生注册对话框 -->
-    <el-dialog title="学生注册" v-model="studentRegisterVisible" width="500px">
-      <el-form :model="studentRegisterForm" :rules="studentRegisterRules" ref="studentRegisterFormRef">
+
+    <!-- 考生注册对话框 -->
+    <el-dialog title="考生注册" v-model="candidateRegisterVisible" width="500px">
+      <el-form :model="candidateRegisterForm" :rules="candidateRegisterRules" ref="candidateRegisterFormRef">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="studentRegisterForm.username" placeholder="请输入用户名" />
+          <el-input v-model="candidateRegisterForm.username" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="studentRegisterForm.password" type="password" placeholder="请输入密码" show-password />
+          <el-input v-model="candidateRegisterForm.password" type="password" placeholder="请输入密码" show-password />
         </el-form-item>
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="studentRegisterForm.name" placeholder="请输入姓名" />
+          <el-input v-model="candidateRegisterForm.name" placeholder="请输入姓名" />
         </el-form-item>
         <el-form-item label="性别">
-          <el-radio-group v-model="studentRegisterForm.gender">
+          <el-radio-group v-model="candidateRegisterForm.gender">
             <el-radio label="1">男</el-radio>
             <el-radio label="0">女</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="联系电话">
-          <el-input v-model="studentRegisterForm.phone" placeholder="请输入联系电话" />
+          <el-input v-model="candidateRegisterForm.phone" placeholder="请输入联系电话" />
         </el-form-item>
         <el-form-item label="邮箱">
-          <el-input v-model="studentRegisterForm.email" placeholder="请输入邮箱" />
+          <el-input v-model="candidateRegisterForm.email" placeholder="请输入邮箱" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="studentRegisterVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleStudentRegister" :loading="loading">注册</el-button>
+        <el-button @click="candidateRegisterVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleCandidateRegister" :loading="loading">注册</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import adminApi from '@/api/admin'
-import teacherApi from '@/api/teacher'
-import studentApi from '@/api/student'
+import creatorApi from '@/api/creator'
+import candidateApi from '@/api/candidate'
+import departmentApi from '@/api/department'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -149,7 +149,8 @@ const userStore = useUserStore()
 const activeTab = ref('admin')
 const loading = ref(false)
 const registerVisible = ref(false)
-const studentRegisterVisible = ref(false)
+const candidateRegisterVisible = ref(false)
+const departmentList = ref([])
 
 // 管理员登录表单
 const adminForm = ref({
@@ -157,19 +158,19 @@ const adminForm = ref({
   password: ''
 })
 
-// 教师登录表单
-const teacherForm = ref({
+// 出题人登录表单
+const creatorForm = ref({
   username: '',
   password: ''
 })
 
-// 学生登录表单
-const studentForm = ref({
+// 考生登录表单
+const candidateForm = ref({
   username: '',
   password: ''
 })
 
-// 教师注册表单
+// 出题人注册表单
 const registerForm = ref({
   username: '',
   password: '',
@@ -177,12 +178,11 @@ const registerForm = ref({
   gender: '1',
   phone: '',
   email: '',
-  department: '',
-  title: ''
+  departmentId: null
 })
 
-// 学生注册表单
-const studentRegisterForm = ref({
+// 考生注册表单
+const candidateRegisterForm = ref({
   username: '',
   password: '',
   name: '',
@@ -197,26 +197,41 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
-// 注册验证规则
+// 出题人注册验证规则
 const registerRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   phone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
-  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }]
+  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+  departmentId: [{ required: true, message: '请选择所属部门', trigger: 'change' }]
 }
 
-const studentRegisterRules = {
+// 考生注册验证规则
+const candidateRegisterRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
 }
 
 const adminFormRef = ref(null)
-const teacherFormRef = ref(null)
-const studentFormRef = ref(null)
+const creatorFormRef = ref(null)
+const candidateFormRef = ref(null)
 const registerFormRef = ref(null)
-const studentRegisterFormRef = ref(null)
+const candidateRegisterFormRef = ref(null)
+
+onMounted(async () => {
+  await loadDepartmentList()
+})
+
+const loadDepartmentList = async () => {
+  try {
+    const res = await departmentApi.getList()
+    departmentList.value = res.data || []
+  } catch (error) {
+    console.error('加载部门列表失败', error)
+  }
+}
 
 // 管理员登录
 const handleAdminLogin = async () => {
@@ -234,55 +249,55 @@ const handleAdminLogin = async () => {
   }
 }
 
-// 教师登录
-const handleTeacherLogin = async () => {
-  await teacherFormRef.value.validate()
+// 出题人登录
+const handleCreatorLogin = async () => {
+  await creatorFormRef.value.validate()
   loading.value = true
   try {
-    const res = await teacherApi.login(teacherForm.value)
+    const res = await creatorApi.login(creatorForm.value)
     userStore.setToken(res.data.token)
-    userStore.setUserInfo(res.data.teacher)
-    userStore.setRole('teacher')
+    userStore.setUserInfo(res.data.creator)
+    userStore.setRole('creator')
     ElMessage.success('登录成功')
-    router.push('/teacher/home')
+    router.push('/creator/home')
   } finally {
     loading.value = false
   }
 }
 
-// 学生登录
-const handleStudentLogin = async () => {
-  await studentFormRef.value.validate()
+// 考生登录
+const handleCandidateLogin = async () => {
+  await candidateFormRef.value.validate()
   loading.value = true
   try {
-    const res = await studentApi.login(studentForm.value)
+    const res = await candidateApi.login(candidateForm.value)
     userStore.setToken(res.data.token)
-    userStore.setUserInfo(res.data.student)
-    userStore.setRole('student')
+    userStore.setUserInfo(res.data.candidate)
+    userStore.setRole('candidate')
     ElMessage.success('登录成功')
-    router.push('/student/home')
+    router.push('/candidate/home')
   } finally {
     loading.value = false
   }
 }
 
-// 显示教师注册对话框
+// 显示出题人注册对话框
 const showRegisterDialog = () => {
   registerVisible.value = true
 }
 
-// 显示学生注册对话框
-const showStudentRegisterDialog = () => {
-  studentRegisterVisible.value = true
+// 显示考生注册对话框
+const showCandidateRegisterDialog = () => {
+  candidateRegisterVisible.value = true
 }
 
-// 教师注册
+// 出题人注册
 const handleRegister = async () => {
   await registerFormRef.value.validate()
   loading.value = true
   try {
-    await teacherApi.register(registerForm.value)
-    ElMessage.success('注册成功，请登录')
+    await creatorApi.register(registerForm.value)
+    ElMessage.success('注册成功，您可以立即登录')
     registerVisible.value = false
     registerForm.value = {
       username: '',
@@ -291,23 +306,22 @@ const handleRegister = async () => {
       gender: '1',
       phone: '',
       email: '',
-      department: '',
-      title: ''
+      departmentId: null
     }
   } finally {
     loading.value = false
   }
 }
 
-// 学生注册
-const handleStudentRegister = async () => {
-  await studentRegisterFormRef.value.validate()
+// 考生注册
+const handleCandidateRegister = async () => {
+  await candidateRegisterFormRef.value.validate()
   loading.value = true
   try {
-    await studentApi.register(studentRegisterForm.value)
-    ElMessage.success('注册成功，请等待管理员审核后登录')
-    studentRegisterVisible.value = false
-    studentRegisterForm.value = {
+    await candidateApi.register(candidateRegisterForm.value)
+    ElMessage.success('注册成功，您可以立即登录')
+    candidateRegisterVisible.value = false
+    candidateRegisterForm.value = {
       username: '',
       password: '',
       name: '',

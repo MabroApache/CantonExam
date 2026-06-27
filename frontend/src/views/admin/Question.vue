@@ -76,9 +76,9 @@
             <el-option v-for="type in questionTypes" :key="type.id" :label="type.name" :value="type.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="所属教师" prop="teacherId">
-          <el-select v-model="questionForm.teacherId" placeholder="请选择教师" style="width: 100%">
-            <el-option v-for="teacher in teacherList" :key="teacher.id" :label="teacher.name" :value="teacher.id" />
+        <el-form-item label="所属出题人" prop="creatorId">
+          <el-select v-model="questionForm.creatorId" placeholder="请选择出题人" style="width: 100%">
+            <el-option v-for="creator in creatorList" :key="creator.id" :label="creator.name" :value="creator.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="题目内容" prop="title">
@@ -183,7 +183,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import questionApi from '@/api/question'
 import questionTypeApi from '@/api/questionType'
-import teacherApi from '@/api/teacher'
+import creatorApi from '@/api/creator'
+import departmentApi from '@/api/department'
 
 const loading = ref(false)
 const questionList = ref([])
@@ -191,11 +192,14 @@ const total = ref(0)
 const pageNum = ref(1)
 const pageSize = ref(10)
 const questionTypes = ref([])
-const teacherList = ref([])
+const creatorList = ref([])
+const departmentList = ref([])
 
 const searchForm = ref({
   typeId: null,
-  difficulty: null
+  difficulty: null,
+  departmentId: null,
+  tags: []
 })
 
 const dialogVisible = ref(false)
@@ -204,9 +208,13 @@ const questionForm = ref({
   id: null,
   typeId: null,
   typeName: '',
-  teacherId: null,
-  teacherName: '',
+  creatorId: null,
+  creatorName: '',
+  departmentId: null,
+  departmentName: '',
   title: '',
+  tags: [],
+  mediaUrl: '',
   optionA: '',
   optionB: '',
   optionC: '',
@@ -256,7 +264,8 @@ watch(multiAnswerOptions, (newVal) => {
 
 onMounted(async () => {
   await loadQuestionTypes()
-  await loadTeacherList()
+  await loadCreatorList()
+  await loadDepartmentList()
   await loadQuestionList()
 })
 
@@ -280,12 +289,21 @@ const loadQuestionTypes = async () => {
   }
 }
 
-const loadTeacherList = async () => {
+const loadCreatorList = async () => {
   try {
-    const res = await teacherApi.getList()
-    teacherList.value = res.data || []
+    const res = await creatorApi.getList()
+    creatorList.value = res.data || []
   } catch (error) {
-    console.error('加载教师列表失败', error)
+    console.error('加载出题人列表失败', error)
+  }
+}
+
+const loadDepartmentList = async () => {
+  try {
+    const res = await departmentApi.getList()
+    departmentList.value = res.data || []
+  } catch (error) {
+    console.error('加载部门列表失败', error)
   }
 }
 
@@ -337,7 +355,9 @@ const handleSearch = () => {
 const handleReset = () => {
   searchForm.value = {
     typeId: null,
-    difficulty: null
+    difficulty: null,
+    departmentId: null,
+    tags: []
   }
   handleSearch()
 }
@@ -358,7 +378,11 @@ const handleAdd = () => {
     id: null,
     typeId: null,
     typeName: '',
+    creatorId: null,
+    departmentId: null,
     title: '',
+    tags: [],
+    mediaUrl: '',
     optionA: '',
     optionB: '',
     optionC: '',

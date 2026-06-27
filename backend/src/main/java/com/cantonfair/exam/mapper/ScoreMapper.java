@@ -20,9 +20,9 @@ public interface ScoreMapper {
     
     List<Score> selectByExamId(Long examId);
     
-    List<Score> selectByStudentId(Long studentId);
+    List<Score> selectByCandidateId(Long candidateId);
     
-    Score selectByExamAndStudent(@Param("examId") Long examId, @Param("studentId") Long studentId);
+    Score selectByExamAndCandidate(@Param("examId") Long examId, @Param("candidateId") Long candidateId);
     
     int insert(Score score);
     

@@ -4,9 +4,12 @@ import com.cantonfair.exam.common.Result;
 import com.cantonfair.exam.entity.Paper;
 import com.cantonfair.exam.entity.PaperQuestion;
 import com.cantonfair.exam.service.PaperService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +18,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/paper")
 public class PaperController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PaperController.class);
 
     @Autowired
     private PaperService paperService;
@@ -26,20 +31,25 @@ public class PaperController {
     }
 
     @GetMapping("/list")
-    public Result<List<Paper>> getAll() {
-        List<Paper> papers = paperService.getAll();
-        return Result.success(papers);
-    }
-
-    @GetMapping("/search")
-    public Result<List<Paper>> getByCondition(Paper paper) {
+    public Result<List<Paper>> getAll(HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        Paper paper = new Paper();
+        paper.setDepartmentId(departmentId);
         List<Paper> papers = paperService.getByCondition(paper);
         return Result.success(papers);
     }
 
-    @GetMapping("/teacher/{teacherId}")
-    public Result<List<Paper>> getByTeacherId(@PathVariable Long teacherId) {
-        List<Paper> papers = paperService.getByTeacherId(teacherId);
+    @GetMapping("/search")
+    public Result<List<Paper>> getByCondition(Paper paper, HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        paper.setDepartmentId(departmentId);
+        List<Paper> papers = paperService.getByCondition(paper);
+        return Result.success(papers);
+    }
+
+    @GetMapping("/creator/{creatorId}")
+    public Result<List<Paper>> getByCreatorId(@PathVariable Long creatorId) {
+        List<Paper> papers = paperService.getByCreatorId(creatorId);
         return Result.success(papers);
     }
 
@@ -57,92 +67,138 @@ public class PaperController {
 
     @PostMapping("/manual")
     public Result<Void> manualCreatePaper(@RequestBody Map<String, Object> params) {
-        Paper paper = new Paper();
-        paper.setName((String) params.get("name"));
-        
-        Object teacherIdObj = params.get("teacherId");
-        if (teacherIdObj instanceof List) {
-            List<?> teacherIdList = (List<?>) teacherIdObj;
-            if (!teacherIdList.isEmpty()) {
-                Object idVal = teacherIdList.get(0);
-                if (idVal instanceof Number) {
-                    paper.setTeacherId(((Number) idVal).longValue());
+        try {
+            logger.info("开始手动组卷，参数: {}", params);
+            
+            Paper paper = new Paper();
+            paper.setName((String) params.get("name"));
+            
+            Object creatorIdObj = params.get("creatorId");
+            if (creatorIdObj instanceof List) {
+                List<?> creatorIdList = (List<?>) creatorIdObj;
+                if (!creatorIdList.isEmpty()) {
+                    Object idVal = creatorIdList.get(0);
+                    if (idVal instanceof Number) {
+                        paper.setCreatorId(((Number) idVal).longValue());
+                    } else {
+                        paper.setCreatorId(Long.parseLong(idVal.toString()));
+                    }
+                }
+            } else if (creatorIdObj != null) {
+                if (creatorIdObj instanceof Number) {
+                    paper.setCreatorId(((Number) creatorIdObj).longValue());
                 } else {
-                    paper.setTeacherId(Long.parseLong(idVal.toString()));
+                    paper.setCreatorId(Long.parseLong(creatorIdObj.toString()));
                 }
             }
-        } else if (teacherIdObj != null) {
-            if (teacherIdObj instanceof Number) {
-                paper.setTeacherId(((Number) teacherIdObj).longValue());
-            } else {
-                paper.setTeacherId(Long.parseLong(teacherIdObj.toString()));
+            
+            paper.setCreatorName((String) params.get("creatorName"));
+            
+            Object departmentIdObj = params.get("departmentId");
+            if (departmentIdObj instanceof Number) {
+                paper.setDepartmentId(((Number) departmentIdObj).longValue());
+            } else if (departmentIdObj != null) {
+                paper.setDepartmentId(Long.parseLong(departmentIdObj.toString()));
             }
-        }
-        
-        paper.setTeacherName((String) params.get("teacherName"));
-        
-        Object durationObj = params.get("duration");
-        if (durationObj instanceof Number) {
-            paper.setDuration(((Number) durationObj).intValue());
-        } else {
-            paper.setDuration(Integer.parseInt(durationObj.toString()));
-        }
-        
-        paper.setDescription((String) params.get("description"));
-        
-        List<Long> questionIds = new ArrayList<>();
-        Object questionIdsObj = params.get("questionIds");
-        if (questionIdsObj instanceof List) {
-            List<?> qIds = (List<?>) questionIdsObj;
-            for (Object qId : qIds) {
-                if (qId != null) {
-                    if (qId instanceof Number) {
-                        questionIds.add(((Number) qId).longValue());
-                    } else {
-                        questionIds.add(Long.parseLong(qId.toString()));
+            
+            paper.setDepartmentName((String) params.get("departmentName"));
+            
+            Object durationObj = params.get("duration");
+            if (durationObj instanceof Number) {
+                paper.setDuration(((Number) durationObj).intValue());
+            } else if (durationObj != null) {
+                paper.setDuration(Integer.parseInt(durationObj.toString()));
+            }
+            
+            paper.setDescription((String) params.get("description"));
+            
+            List<Long> questionIds = new ArrayList<>();
+            Object questionIdsObj = params.get("questionIds");
+            if (questionIdsObj instanceof List) {
+                List<?> qIds = (List<?>) questionIdsObj;
+                for (Object qId : qIds) {
+                    if (qId != null) {
+                        if (qId instanceof Number) {
+                            questionIds.add(((Number) qId).longValue());
+                        } else {
+                            questionIds.add(Long.parseLong(qId.toString()));
+                        }
                     }
                 }
             }
+            
+            List<BigDecimal> scores = new ArrayList<>();
+            Object scoresObj = params.get("scores");
+            if (scoresObj instanceof List) {
+                List<?> scoreList = (List<?>) scoresObj;
+                for (Object score : scoreList) {
+                    if (score != null) {
+                        scores.add(new BigDecimal(score.toString()));
+                    }
+                }
+            }
+            
+            paperService.manualCreatePaper(paper, questionIds, scores);
+            logger.info("手动组卷成功，试卷名称: {}", paper.getName());
+            return Result.success();
+        } catch (Exception e) {
+            logger.error("手动组卷失败", e);
+            return Result.error("组卷失败：" + e.getMessage());
         }
-        
-        paperService.manualCreatePaper(paper, questionIds);
-        return Result.success();
     }
 
     @PostMapping("/auto")
-    public Result<Void> autoCreatePaper(@RequestBody Map<String, Object> params) {
-        Paper paper = new Paper();
-        paper.setName((String) params.get("name"));
-        
-        Object teacherIdObj = params.get("teacherId");
-        if (teacherIdObj instanceof List) {
-            List<?> teacherIdList = (List<?>) teacherIdObj;
-            if (!teacherIdList.isEmpty()) {
-                paper.setTeacherId(Long.parseLong(teacherIdList.get(0).toString()));
+    public Result<Void> autoCreatePaper(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        try {
+            logger.info("开始自动组卷，参数: {}", params);
+            
+            Paper paper = new Paper();
+            paper.setName((String) params.get("name"));
+            
+            Object creatorIdObj = params.get("creatorId");
+            if (creatorIdObj instanceof List) {
+                List<?> creatorIdList = (List<?>) creatorIdObj;
+                if (!creatorIdList.isEmpty()) {
+                    paper.setCreatorId(Long.parseLong(creatorIdList.get(0).toString()));
+                }
+            } else if (creatorIdObj != null) {
+                paper.setCreatorId(Long.parseLong(creatorIdObj.toString()));
             }
-        } else {
-            paper.setTeacherId(Long.parseLong(teacherIdObj.toString()));
+            
+            paper.setCreatorName((String) params.get("creatorName"));
+            
+            Long departmentId = (Long) request.getAttribute("departmentId");
+            paper.setDepartmentId(departmentId);
+            
+            Object durationObj = params.get("duration");
+            if (durationObj instanceof Number) {
+                paper.setDuration(((Number) durationObj).intValue());
+            } else if (durationObj != null) {
+                paper.setDuration(Integer.parseInt(durationObj.toString()));
+            }
+            
+            paper.setDescription((String) params.get("description"));
+            
+            int singleCount = params.get("singleCount") != null ? Integer.parseInt(params.get("singleCount").toString()) : 0;
+            int multiCount = params.get("multiCount") != null ? Integer.parseInt(params.get("multiCount").toString()) : 0;
+            int judgeCount = params.get("judgeCount") != null ? Integer.parseInt(params.get("judgeCount").toString()) : 0;
+            int fillCount = params.get("fillCount") != null ? Integer.parseInt(params.get("fillCount").toString()) : 0;
+            int essayCount = params.get("essayCount") != null ? Integer.parseInt(params.get("essayCount").toString()) : 0;
+            
+            BigDecimal singleScore = params.get("singleScore") != null ? new BigDecimal(params.get("singleScore").toString()) : BigDecimal.ZERO;
+            BigDecimal multiScore = params.get("multiScore") != null ? new BigDecimal(params.get("multiScore").toString()) : BigDecimal.ZERO;
+            BigDecimal judgeScore = params.get("judgeScore") != null ? new BigDecimal(params.get("judgeScore").toString()) : BigDecimal.ZERO;
+            BigDecimal fillScore = params.get("fillScore") != null ? new BigDecimal(params.get("fillScore").toString()) : BigDecimal.ZERO;
+            BigDecimal essayScore = params.get("essayScore") != null ? new BigDecimal(params.get("essayScore").toString()) : BigDecimal.ZERO;
+            
+            paperService.autoCreatePaper(paper, singleCount, multiCount, judgeCount, 
+                    fillCount, essayCount, singleScore, multiScore, judgeScore, fillScore, essayScore);
+            logger.info("自动组卷成功，试卷名称: {}", paper.getName());
+            return Result.success();
+        } catch (Exception e) {
+            logger.error("自动组卷失败", e);
+            return Result.error("组卷失败：" + e.getMessage());
         }
-        
-        paper.setTeacherName((String) params.get("teacherName"));
-        paper.setDuration(Integer.parseInt(params.get("duration").toString()));
-        paper.setDescription((String) params.get("description"));
-        
-        int singleCount = Integer.parseInt(params.get("singleCount").toString());
-        int multiCount = Integer.parseInt(params.get("multiCount").toString());
-        int judgeCount = Integer.parseInt(params.get("judgeCount").toString());
-        int fillCount = Integer.parseInt(params.get("fillCount").toString());
-        int essayCount = Integer.parseInt(params.get("essayCount").toString());
-        
-        BigDecimal singleScore = new BigDecimal(params.get("singleScore").toString());
-        BigDecimal multiScore = new BigDecimal(params.get("multiScore").toString());
-        BigDecimal judgeScore = new BigDecimal(params.get("judgeScore").toString());
-        BigDecimal fillScore = new BigDecimal(params.get("fillScore").toString());
-        BigDecimal essayScore = new BigDecimal(params.get("essayScore").toString());
-        
-        paperService.autoCreatePaper(paper, singleCount, multiCount, judgeCount, 
-                fillCount, essayCount, singleScore, multiScore, judgeScore, fillScore, essayScore);
-        return Result.success();
     }
 
     @GetMapping("/questions/{paperId}")

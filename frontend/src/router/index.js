@@ -26,10 +26,10 @@ const routes = [
         meta: { title: '系统首页' }
       },
       {
-        path: 'notice',
-        name: 'Notice',
-        component: () => import('@/views/admin/Notice.vue'),
-        meta: { title: '系统公告' }
+        path: 'department',
+        name: 'Department',
+        component: () => import('@/views/admin/Department.vue'),
+        meta: { title: '部门管理' }
       },
       {
         path: 'exam',
@@ -68,18 +68,6 @@ const routes = [
         meta: { title: '管理员信息' }
       },
       {
-        path: 'teacherInfo',
-        name: 'TeacherInfo',
-        component: () => import('@/views/admin/TeacherInfo.vue'),
-        meta: { title: '教师信息' }
-      },
-      {
-        path: 'studentInfo',
-        name: 'StudentInfo',
-        component: () => import('@/views/admin/StudentInfo.vue'),
-        meta: { title: '学生信息' }
-      },
-      {
         path: 'profile',
         name: 'AdminProfile',
         component: () => import('@/views/admin/Profile.vue'),
@@ -88,85 +76,85 @@ const routes = [
     ]
   },
   {
-    path: '/teacher',
-    name: 'TeacherLayout',
-    component: () => import('@/layouts/TeacherLayout.vue'),
-    redirect: '/teacher/home',
-    meta: { role: 'teacher' },
+    path: '/creator',
+    name: 'CreatorLayout',
+    component: () => import('@/layouts/CreatorLayout.vue'),
+    redirect: '/creator/home',
+    meta: { role: 'creator' },
     children: [
       {
         path: 'home',
-        name: 'TeacherHome',
-        component: () => import('@/views/teacher/Home.vue'),
+        name: 'CreatorHome',
+        component: () => import('@/views/creator/Home.vue'),
         meta: { title: '系统首页' }
       },
       {
         path: 'question',
-        name: 'TeacherQuestion',
-        component: () => import('@/views/teacher/Question.vue'),
-        meta: { title: '题库信息' }
+        name: 'CreatorQuestion',
+        component: () => import('@/views/creator/Question.vue'),
+        meta: { title: '题库管理' }
       },
       {
         path: 'paper',
-        name: 'TeacherPaper',
-        component: () => import('@/views/teacher/Paper.vue'),
-        meta: { title: '试卷信息' }
+        name: 'CreatorPaper',
+        component: () => import('@/views/creator/Paper.vue'),
+        meta: { title: '试卷管理' }
       },
       {
         path: 'exam',
-        name: 'TeacherExam',
-        component: () => import('@/views/teacher/Exam.vue'),
+        name: 'CreatorExam',
+        component: () => import('@/views/creator/Exam.vue'),
         meta: { title: '考试安排' }
       },
       {
         path: 'grade',
         name: 'Grade',
-        component: () => import('@/views/teacher/Grade.vue'),
+        component: () => import('@/views/creator/Grade.vue'),
         meta: { title: '阅卷打分' }
       },
       {
         path: 'profile',
-        name: 'TeacherProfile',
-        component: () => import('@/views/teacher/Profile.vue'),
+        name: 'CreatorProfile',
+        component: () => import('@/views/creator/Profile.vue'),
         meta: { title: '个人中心' }
       }
     ]
   },
   {
-    path: '/student',
-    name: 'StudentLayout',
-    component: () => import('@/layouts/StudentLayout.vue'),
-    redirect: '/student/home',
-    meta: { role: 'student' },
+    path: '/candidate',
+    name: 'CandidateLayout',
+    component: () => import('@/layouts/CandidateLayout.vue'),
+    redirect: '/candidate/home',
+    meta: { role: 'candidate' },
     children: [
       {
         path: 'home',
-        name: 'StudentHome',
-        component: () => import('@/views/student/Home.vue'),
+        name: 'CandidateHome',
+        component: () => import('@/views/candidate/Home.vue'),
         meta: { title: '系统首页' }
       },
       {
         path: 'exam',
-        name: 'StudentExam',
-        component: () => import('@/views/student/Exam.vue'),
+        name: 'CandidateExam',
+        component: () => import('@/views/candidate/Exam.vue'),
         meta: { title: '在线考试' }
       },
       {
         path: 'exam/:examId',
         name: 'ExamDetail',
-        component: () => import('@/views/student/ExamDetail.vue'),
+        component: () => import('@/views/candidate/ExamDetail.vue'),
         meta: { title: '答题页面' }
       },
       {
         path: 'score',
-        name: 'StudentScore',
-        component: () => import('@/views/student/Score.vue'),
+        name: 'CandidateScore',
+        component: () => import('@/views/candidate/Score.vue'),
         meta: { title: '我的成绩' }
       },
       {
         path: 'profile',
-        name: 'StudentProfile',
-        component: () => import('@/views/student/Profile.vue'),
+        name: 'CandidateProfile',
+        component: () => import('@/views/candidate/Profile.vue'),
         meta: { title: '个人中心' }
       }
     ]
@@ -180,8 +168,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
-  const token = userStore.token || localStorage.getItem('token')
-  const role = userStore.role || localStorage.getItem('role')
+  const token = userStore.token || sessionStorage.getItem('token')
+  const role = userStore.role || sessionStorage.getItem('role')
 
   document.title = to.meta.title || '广交会在线考试系统'
 

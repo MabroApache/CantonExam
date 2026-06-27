@@ -13,8 +13,10 @@ public class Exam implements Serializable {
     private String name;
     private Long paperId;
     private String paperName;
-    private Long teacherId;
-    private String teacherName;
+    private Long creatorId;
+    private String creatorName;
+    private Long departmentId;
+    private String departmentName;
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;

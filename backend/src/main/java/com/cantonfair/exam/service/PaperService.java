@@ -38,8 +38,8 @@ public class PaperService {
         return paperMapper.selectByCondition(paper);
     }
 
-    public List<Paper> getByTeacherId(Long teacherId) {
-        return paperMapper.selectByTeacherId(teacherId);
+    public List<Paper> getByCreatorId(Long creatorId) {
+        return paperMapper.selectByCreatorId(creatorId);
     }
 
     public void add(Paper paper) {
@@ -47,7 +47,7 @@ public class PaperService {
     }
 
     @Transactional
-    public void manualCreatePaper(Paper paper, List<Long> questionIds) {
+    public void manualCreatePaper(Paper paper, List<Long> questionIds, List<BigDecimal> scores) {
         BigDecimal totalScore = BigDecimal.ZERO;
         int singleCount = 0, multiCount = 0, judgeCount = 0, fillCount = 0, essayCount = 0;
         
@@ -58,11 +58,14 @@ public class PaperService {
             if (question != null) {
                 PaperQuestion pq = new PaperQuestion();
                 pq.setQuestionId(questionId);
-                pq.setScore(question.getScore());
+                if (scores != null && i < scores.size()) {
+                    pq.setScore(scores.get(i));
+                    totalScore = totalScore.add(scores.get(i));
+                } else {
+                    pq.setScore(BigDecimal.ZERO);
+                }
                 pq.setSort(i + 1);
                 paperQuestions.add(pq);
-                
-                totalScore = totalScore.add(question.getScore());
                 
                 String typeName = question.getTypeName();
                 if ("单选题".equals(typeName)) singleCount++;

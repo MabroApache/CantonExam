@@ -11,9 +11,9 @@
             <el-icon><HomeFilled /></el-icon>
             <span>系统首页</span>
           </el-menu-item>
-          <el-menu-item index="/admin/notice">
-            <el-icon><Bell /></el-icon>
-            <span>系统公告</span>
+          <el-menu-item index="/admin/department">
+            <el-icon><OfficeBuilding /></el-icon>
+            <span>部门管理</span>
           </el-menu-item>
           <el-menu-item index="/admin/exam">
             <el-icon><Calendar /></el-icon>
@@ -38,14 +38,6 @@
           <el-menu-item index="/admin/adminInfo">
             <el-icon><User /></el-icon>
             <span>管理员信息</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/teacherInfo">
-            <el-icon><User /></el-icon>
-            <span>教师信息</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/studentInfo">
-            <el-icon><User /></el-icon>
-            <span>学生信息</span>
           </el-menu-item>
           <el-menu-item index="/admin/profile">
             <el-icon><Setting /></el-icon>

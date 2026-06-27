@@ -28,8 +28,16 @@ public class ExamService {
         return examMapper.selectByCondition(exam);
     }
 
-    public List<Exam> getByStudentId(Long studentId) {
-        return examMapper.selectByStudentId(studentId);
+    public List<Exam> getByCreatorId(Long creatorId) {
+        return examMapper.selectByCreatorId(creatorId);
+    }
+
+    public List<Exam> getAvailableExams(Long candidateId) {
+        return examMapper.selectAvailableExams();
+    }
+
+    public List<Exam> getByDepartmentId(Long departmentId) {
+        return examMapper.selectByDepartmentId(departmentId);
     }
 
     public void add(Exam exam) {

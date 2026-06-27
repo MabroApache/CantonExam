@@ -17,9 +17,9 @@ public class ExamRecord implements Serializable {
     private String examName;
     private Long paperId;
     private String paperName;
-    private Long studentId;
-    private String studentName;
-    private Long teacherId;
+    private Long candidateId;
+    private String candidateName;
+    private Long departmentId;
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;

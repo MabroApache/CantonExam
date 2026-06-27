@@ -18,7 +18,11 @@ public interface ExamMapper {
     
     List<Exam> selectByCondition(Exam exam);
     
-    List<Exam> selectByStudentId(Long studentId);
+    List<Exam> selectByCreatorId(Long creatorId);
+    
+    List<Exam> selectAvailableExams();
+    
+    List<Exam> selectByDepartmentId(Long departmentId);
     
     int insert(Exam exam);
     

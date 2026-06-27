@@ -6,6 +6,7 @@ import com.cantonfair.exam.service.ExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -31,8 +32,9 @@ public class ExamController {
      * 查询所有
      */
     @GetMapping("/list")
-    public Result<List<Exam>> getAll() {
-        List<Exam> exams = examService.getAll();
+    public Result<List<Exam>> getAll(HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        List<Exam> exams = examService.getByDepartmentId(departmentId);
         return Result.success(exams);
     }
 
@@ -40,17 +42,28 @@ public class ExamController {
      * 条件查询
      */
     @GetMapping("/search")
-    public Result<List<Exam>> getByCondition(Exam exam) {
+    public Result<List<Exam>> getByCondition(Exam exam, HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        exam.setDepartmentId(departmentId);
         List<Exam> exams = examService.getByCondition(exam);
         return Result.success(exams);
     }
 
     /**
-     * 根据学生ID查询可参加的考试
+     * 根据出题人ID查询考试
      */
-    @GetMapping("/student/{studentId}")
-    public Result<List<Exam>> getByStudentId(@PathVariable Long studentId) {
-        List<Exam> exams = examService.getByStudentId(studentId);
+    @GetMapping("/creator/{creatorId}")
+    public Result<List<Exam>> getByCreatorId(@PathVariable Long creatorId) {
+        List<Exam> exams = examService.getByCreatorId(creatorId);
+        return Result.success(exams);
+    }
+
+    /**
+     * 获取考生可参加的考试列表
+     */
+    @GetMapping("/candidate/{candidateId}")
+    public Result<List<Exam>> getByCandidateId(@PathVariable Long candidateId) {
+        List<Exam> exams = examService.getAvailableExams(candidateId);
         return Result.success(exams);
     }
 
@@ -58,7 +71,9 @@ public class ExamController {
      * 新增
      */
     @PostMapping
-    public Result<Void> add(@RequestBody Exam exam) {
+    public Result<Void> add(@RequestBody Exam exam, HttpServletRequest request) {
+        Long departmentId = (Long) request.getAttribute("departmentId");
+        exam.setDepartmentId(departmentId);
         examService.add(exam);
         return Result.success();
     }

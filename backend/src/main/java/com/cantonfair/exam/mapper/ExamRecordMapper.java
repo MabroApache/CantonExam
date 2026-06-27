@@ -18,7 +18,7 @@ public interface ExamRecordMapper {
     
     List<ExamRecord> selectByCondition(ExamRecord examRecord);
     
-    ExamRecord selectByExamAndStudent(@Param("examId") Long examId, @Param("studentId") Long studentId);
+    ExamRecord selectByExamAndCandidate(@Param("examId") Long examId, @Param("candidateId") Long candidateId);
     
     int insert(ExamRecord examRecord);
     
