@@ -292,6 +292,9 @@
           <span class="question-type">[{{ question.typeName }}]</span>
           <span class="question-score">({{ question.score }}分)</span>
         </div>
+        <div v-if="question.imageUrl" class="question-image">
+          <img :src="question.imageUrl" alt="题目图片" class="img-fluid" />
+        </div>
         <div v-if="question.optionA" class="question-options">
           <div>A. {{ question.optionA }}</div>
           <div>B. {{ question.optionB }}</div>

@@ -5,6 +5,8 @@ import com.cantonfair.exam.entity.PaperQuestion;
 import com.cantonfair.exam.entity.Question;
 import com.cantonfair.exam.entity.Score;
 import com.cantonfair.exam.entity.CandidateAnswer;
+import com.cantonfair.exam.entity.Exam;
+import com.cantonfair.exam.entity.Paper;
 import com.cantonfair.exam.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,12 @@ public class ExamRecordService {
     @Autowired
     private ScoreMapper scoreMapper;
 
+    @Autowired
+    private ExamMapper examMapper;
+
+    @Autowired
+    private PaperMapper paperMapper;
+
     public ExamRecord getById(Long id) {
         return examRecordMapper.selectById(id);
     }
@@ -63,10 +71,15 @@ public class ExamRecordService {
             return existRecord;
         }
         
+        Exam exam = examMapper.selectById(examId);
+        Paper paper = paperMapper.selectById(paperId);
+        
         // 创建考试记录
         ExamRecord record = new ExamRecord();
         record.setExamId(examId);
+        record.setExamName(exam != null ? exam.getName() : "");
         record.setPaperId(paperId);
+        record.setPaperName(paper != null ? paper.getName() : "");
         record.setCandidateId(CandidateId);
         record.setCandidateName(CandidateName);
         record.setStartTime(LocalDateTime.now());
@@ -91,6 +104,7 @@ public class ExamRecordService {
             answer.setOptionB(question.getOptionB());
             answer.setOptionC(question.getOptionC());
             answer.setOptionD(question.getOptionD());
+            answer.setImageUrl(question.getImageUrl());
             answer.setCorrectAnswer(question.getAnswer());
             answer.setScore(pq.getScore());
             answer.setGetScore(BigDecimal.ZERO);
@@ -257,9 +271,14 @@ public class ExamRecordService {
             existingScore.setSubjectiveScore(subjectiveScore);
             scoreMapper.update(existingScore);
         } else {
+            Exam exam = examMapper.selectById(record.getExamId());
+            Paper paper = paperMapper.selectById(record.getPaperId());
+            
             Score score = new Score();
             score.setExamId(record.getExamId());
+            score.setExamName(exam != null ? exam.getName() : record.getExamName());
             score.setPaperId(record.getPaperId());
+            score.setPaperName(paper != null ? paper.getName() : record.getPaperName());
             score.setCandidateId(record.getCandidateId());
             score.setCandidateName(record.getCandidateName());
             score.setTotalScore(totalScore);

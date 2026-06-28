@@ -16,11 +16,11 @@
           <el-input v-model="searchForm.candidateName" placeholder="请输入考生姓名" clearable />
         </el-form-item>
         <el-form-item label="阅卷状态">
-          <el-select v-model="searchForm.gradeStatus" placeholder="请选择阅卷状态" clearable>
-            <el-option label="未阅卷" :value="0" />
-            <el-option label="已阅卷" :value="1" />
-          </el-select>
-        </el-form-item>
+        <el-select v-model="searchForm.status" placeholder="请选择阅卷状态" clearable>
+          <el-option label="待阅卷" :value="1" />
+          <el-option label="已阅卷" :value="2" />
+        </el-select>
+      </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -49,8 +49,8 @@
         <el-table-column prop="submitTime" label="提交时间" width="180" />
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleGrade(row)" v-if="!row.subjectiveScore">阅卷</el-button>
-            <el-button type="text" size="small" @click="handleView(row)" v-else>查看</el-button>
+            <el-button type="primary" size="small" @click="handleGrade(row)" v-if="row.status === 1">阅卷</el-button>
+            <el-button type="default" size="small" :disabled="true" v-else>已阅卷</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -89,6 +89,9 @@
             {{ getCorrectText(answer.isCorrect) }}
           </span>
         </div>
+        <div v-if="answer.imageUrl" class="grade-image">
+          <img :src="answer.imageUrl" alt="题目图片" class="img-fluid" />
+        </div>
         <div v-if="answer.optionA" class="grade-options">
           <div>A. {{ answer.optionA }}</div>
           <div>B. {{ answer.optionB }}</div>
@@ -110,6 +113,9 @@
           <span>{{ answer.title }}</span>
           <span class="grade-type">[{{ answer.typeName }}]</span>
           <span class="grade-score">({{ answer.score }}分)</span>
+        </div>
+        <div v-if="answer.imageUrl" class="grade-image">
+          <img :src="answer.imageUrl" alt="题目图片" class="img-fluid" />
         </div>
         <div class="grade-content">
           <p><strong>考生答案：</strong></p>
@@ -157,6 +163,9 @@
           <span class="answer-type">[{{ answer.typeName }}]</span>
           <span class="answer-score">({{ answer.score }}分)</span>
         </div>
+        <div v-if="answer.imageUrl" class="answer-image">
+          <img :src="answer.imageUrl" alt="题目图片" class="img-fluid" />
+        </div>
         <div v-if="answer.optionA" class="answer-options">
           <div>A. {{ answer.optionA }}</div>
           <div>B. {{ answer.optionB }}</div>
@@ -199,7 +208,7 @@ const pageSize = ref(10)
 const searchForm = ref({
   examName: '',
   candidateName: '',
-  gradeStatus: null,
+  status: null,
   creatorId: userInfo.value.id
 })
 
@@ -236,7 +245,7 @@ const handleReset = () => {
   searchForm.value = {
     examName: '',
     candidateName: '',
-    gradeStatus: null,
+    status: 1,
     creatorId: userInfo.value.id
   }
   handleSearch()
@@ -385,6 +394,28 @@ const getCorrectText = (isCorrect) => {
 
 .grade-content p {
   margin: 8px 0;
+}
+
+.grade-image {
+  margin: 15px 0;
+  max-width: 100%;
+}
+
+.grade-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.answer-image {
+  margin: 15px 0;
+  max-width: 100%;
+}
+
+.answer-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 
 .candidate-answer {

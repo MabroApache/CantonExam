@@ -6,6 +6,7 @@ D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\mapper\ExamM
 D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Paper.java
 D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\entity\Department.java
 D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\PaperController.java
+D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\FileController.java
 D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\service\ExamService.java
 D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\ScoreController.java
 D:\Canton Fair\CantonExam\backend\src\main\java\com\cantonfair\exam\controller\QuestionController.java

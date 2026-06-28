@@ -21,7 +21,7 @@
 
     <sql id="Base_Column_List">
         sc.id, sc.exam_id, sc.paper_id, sc.candidate_id, sc.total_score, sc.objective_score, sc.subjective_score, sc.`rank`, sc.submit_time, sc.create_time, sc.update_time,
-        e.name as exam_name, p.name as paper_name, c.name as candidate_name
+        COALESCE(sc.exam_name, e.name) as exam_name, COALESCE(sc.paper_name, p.name) as paper_name, COALESCE(sc.candidate_name, c.name) as candidate_name
     </sql>
 
     <select id="selectById" resultMap="BaseResultMap">
@@ -92,8 +92,8 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into score(exam_id, paper_id, candidate_id, total_score, objective_score, subjective_score, `rank`, submit_time)
-        values(#{examId}, #{paperId}, #{candidateId}, #{totalScore}, #{objectiveScore}, #{subjectiveScore}, #{rank}, #{submitTime})
+        insert into score(exam_id, exam_name, paper_id, paper_name, candidate_id, candidate_name, total_score, objective_score, subjective_score, `rank`, submit_time)
+        values(#{examId}, #{examName}, #{paperId}, #{paperName}, #{candidateId}, #{candidateName}, #{totalScore}, #{objectiveScore}, #{subjectiveScore}, #{rank}, #{submitTime})
     </insert>
 
     <update id="update">

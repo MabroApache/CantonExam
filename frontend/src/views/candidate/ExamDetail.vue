@@ -27,6 +27,9 @@
                 <span>{{ question.title }}</span>
                 <span class="question-score">（{{ question.score }}分）</span>
               </div>
+              <div v-if="question.imageUrl" class="question-image">
+                <img :src="question.imageUrl" alt="题目图片" class="img-fluid" />
+              </div>
               <el-radio-group v-model="answers[question.id]" class="question-options">
                 <el-radio label="A" v-if="question.optionA">A. {{ question.optionA }}</el-radio>
                 <el-radio label="B" v-if="question.optionB">B. {{ question.optionB }}</el-radio>
@@ -42,6 +45,9 @@
                 <span class="question-number">{{ index + 1 }}.</span>
                 <span>{{ question.title }}</span>
                 <span class="question-score">（{{ question.score }}分）</span>
+              </div>
+              <div v-if="question.imageUrl" class="question-image">
+                <img :src="question.imageUrl" alt="题目图片" class="img-fluid" />
               </div>
               <el-checkbox-group v-model="multiAnswers[question.id]" class="question-options">
                 <el-checkbox label="A" v-if="question.optionA">A. {{ question.optionA }}</el-checkbox>
@@ -59,6 +65,9 @@
                 <span>{{ question.title }}</span>
                 <span class="question-score">（{{ question.score }}分）</span>
               </div>
+              <div v-if="question.imageUrl" class="question-image">
+                <img :src="question.imageUrl" alt="题目图片" class="img-fluid" />
+              </div>
               <el-radio-group v-model="answers[question.id]" class="question-options">
                 <el-radio label="正确">正确</el-radio>
                 <el-radio label="错误">错误</el-radio>
@@ -73,6 +82,9 @@
                 <span>{{ question.title }}</span>
                 <span class="question-score">（{{ question.score }}分）</span>
               </div>
+              <div v-if="question.imageUrl" class="question-image">
+                <img :src="question.imageUrl" alt="题目图片" class="img-fluid" />
+              </div>
               <el-input v-model="answers[question.id]" placeholder="请输入答案" />
             </div>
           </el-tab-pane>
@@ -83,6 +95,9 @@
                 <span class="question-number">{{ index + 1 }}.</span>
                 <span>{{ question.title }}</span>
                 <span class="question-score">（{{ question.score }}分）</span>
+              </div>
+              <div v-if="question.imageUrl" class="question-image">
+                <img :src="question.imageUrl" alt="题目图片" class="img-fluid" />
               </div>
               <el-input v-model="answers[question.id]" type="textarea" :rows="5" placeholder="请输入答案" />
             </div>
@@ -198,7 +213,8 @@ const loadExamInfo = async () => {
       optionA: q.optionA,
       optionB: q.optionB,
       optionC: q.optionC,
-      optionD: q.optionD
+      optionD: q.optionD,
+      imageUrl: q.imageUrl
     }
   })
   console.log('构建后的题目列表:', questions.value)
@@ -389,6 +405,17 @@ const handleSubmit = () => {
 .question-options .el-checkbox {
   margin: 10px 0;
   display: block;
+}
+
+.question-image {
+  margin: 15px 0;
+  max-width: 100%;
+}
+
+.question-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 
 .submit-area {

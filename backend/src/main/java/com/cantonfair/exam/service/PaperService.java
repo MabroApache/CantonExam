@@ -191,6 +191,16 @@ public class PaperService {
             if (question != null) {
                 pq.setTypeId(question.getTypeId());
                 pq.setTypeName(question.getTypeName());
+                // 设置题目完整内容
+                pq.setTitle(question.getTitle());
+                pq.setOptionA(question.getOptionA());
+                pq.setOptionB(question.getOptionB());
+                pq.setOptionC(question.getOptionC());
+                pq.setOptionD(question.getOptionD());
+                pq.setAnswer(question.getAnswer());
+                pq.setAnalysis(question.getAnalysis());
+                pq.setTags(question.getTags());
+                pq.setImageUrl(question.getImageUrl());
             }
         }
         

@@ -13,6 +13,7 @@
         <result column="option_b" property="optionB"/>
         <result column="option_c" property="optionC"/>
         <result column="option_d" property="optionD"/>
+        <result column="image_url" property="imageUrl"/>
         <result column="candidate_answer" property="candidateAnswer"/>
         <result column="correct_answer" property="correctAnswer"/>
         <result column="score" property="score"/>
@@ -47,15 +48,15 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into candidate_answer(record_id, question_id, type_id, candidate_answer, correct_answer, score, get_score, is_correct, comment)
-        values(#{recordId}, #{questionId}, #{typeId}, #{candidateAnswer}, #{correctAnswer}, #{score}, #{getScore}, #{isCorrect}, #{comment})
+        insert into candidate_answer(record_id, question_id, type_id, title, option_a, option_b, option_c, option_d, image_url, candidate_answer, correct_answer, score, get_score, is_correct, comment)
+        values(#{recordId}, #{questionId}, #{typeId}, #{title}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, #{imageUrl}, #{candidateAnswer}, #{correctAnswer}, #{score}, #{getScore}, #{isCorrect}, #{comment})
     </insert>
 
     <insert id="insertBatch">
-        insert into candidate_answer(record_id, question_id, type_id, candidate_answer, correct_answer, score, get_score, is_correct, comment)
+        insert into candidate_answer(record_id, question_id, type_id, title, option_a, option_b, option_c, option_d, image_url, candidate_answer, correct_answer, score, get_score, is_correct, comment)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.recordId}, #{item.questionId}, #{item.typeId}, #{item.candidateAnswer}, #{item.correctAnswer}, #{item.score}, #{item.getScore}, #{item.isCorrect}, #{item.comment})
+            (#{item.recordId}, #{item.questionId}, #{item.typeId}, #{item.title}, #{item.optionA}, #{item.optionB}, #{item.optionC}, #{item.optionD}, #{item.imageUrl}, #{item.candidateAnswer}, #{item.correctAnswer}, #{item.score}, #{item.getScore}, #{item.isCorrect}, #{item.comment})
         </foreach>
     </insert>
 

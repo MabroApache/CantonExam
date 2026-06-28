@@ -58,7 +58,7 @@
           <el-input-number v-model="paperForm.duration" :min="1" :max="300" />
           <span style="margin-left: 10px">分钟</span>
         </el-form-item>
-        <el-form-item label="总分" prop="totalScore">
+        <el-form-item label="总分" prop="totalScore" v-if="!isEdit">
           <el-input-number v-model="paperForm.totalScore" :min="1" :max="500" />
           <span style="margin-left: 10px">分</span>
         </el-form-item>

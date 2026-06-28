@@ -22,6 +22,17 @@ public class PaperQuestion implements Serializable {
     private Long typeId;
     private String typeName;
     
+    // 额外字段：题目内容（用于查看试卷详情）
+    private String title;
+    private String optionA;
+    private String optionB;
+    private String optionC;
+    private String optionD;
+    private String answer;
+    private String analysis;
+    private String tags;
+    private String imageUrl;
+    
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 }

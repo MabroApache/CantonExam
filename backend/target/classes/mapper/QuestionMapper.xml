@@ -66,6 +66,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="tags != null and tags != ''">
+                and tags like concat('%', #{tags}, '%')
+            </if>
         </where>
         order by create_time desc
     </select>

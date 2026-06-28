@@ -76,7 +76,17 @@
           <el-input v-model="questionForm.title" type="textarea" :rows="3" placeholder="请输入题目内容" />
         </el-form-item>
         <el-form-item label="图片">
-          <el-input v-model="questionForm.imageUrl" placeholder="请输入图片URL" />
+          <el-upload
+            class="upload-demo"
+            action="/api/file/upload"
+            :on-success="handleImageUploadSuccess"
+            :on-error="handleUploadError"
+            :show-file-list="false"
+            accept="image/*"
+          >
+            <el-button type="primary" size="small">上传图片</el-button>
+          </el-upload>
+          <el-input v-model="questionForm.imageUrl" placeholder="或输入图片URL" style="margin-top: 10px" />
           <div v-if="questionForm.imageUrl" style="margin-top: 10px">
             <img :src="questionForm.imageUrl" style="max-width: 300px; max-height: 200px" />
           </div>
@@ -286,6 +296,7 @@ watch(multiAnswerOptions, (newVal) => {
 
 onMounted(async () => {
   await loadQuestionTypes()
+  await loadAllTags()
   await loadQuestionList()
 })
 
@@ -295,6 +306,21 @@ const loadQuestionTypes = async () => {
     questionTypes.value = res.data || []
   } catch (error) {
     console.error('获取题型失败', error)
+  }
+}
+
+const loadAllTags = async () => {
+  try {
+    const res = await questionApi.search({ departmentId: userInfo.value.departmentId })
+    const list = res.data || []
+    const tagsSet = new Set()
+    list.forEach(q => {
+      const tags = parseTags(q.tags)
+      tags.forEach(tag => tagsSet.add(tag))
+    })
+    allTags.value = Array.from(tagsSet)
+  } catch (error) {
+    console.error('获取标签失败', error)
   }
 }
 
@@ -322,19 +348,18 @@ const tagsToString = (tagsArr) => {
 const loadQuestionList = async () => {
   loading.value = true
   try {
-    const res = await questionApi.search(searchForm.value)
+    const searchParams = { ...searchForm.value }
+    if (searchForm.value.tags && searchForm.value.tags.length > 0) {
+      searchParams.tags = searchForm.value.tags.join(',')
+    } else {
+      searchParams.tags = ''
+    }
+    const res = await questionApi.search(searchParams)
     const list = res.data || []
     list.forEach(q => {
       q.tags = parseTags(q.tags)
     })
     questionList.value = list
-    const tagsSet = new Set()
-    questionList.value.forEach(q => {
-      if (q.tags && Array.isArray(q.tags)) {
-        q.tags.forEach(tag => tagsSet.add(tag))
-      }
-    })
-    allTags.value = Array.from(tagsSet)
   } finally {
     loading.value = false
   }
@@ -416,6 +441,19 @@ const handlePreview = (row) => {
 const isImage = (url) => {
   if (!url) return false
   return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url)
+}
+
+const handleImageUploadSuccess = (response) => {
+  if (response.code === 200) {
+    questionForm.value.imageUrl = response.data
+    ElMessage.success('图片上传成功')
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
+}
+
+const handleUploadError = () => {
+  ElMessage.error('上传失败，请重试')
 }
 
 const handleSave = async () => {

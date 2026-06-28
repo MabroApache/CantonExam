@@ -28,6 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/candidate/register",
                         "/department/list",
                         "/files/**",
+                        "/file/upload",
                         "/error"
                 );
     }

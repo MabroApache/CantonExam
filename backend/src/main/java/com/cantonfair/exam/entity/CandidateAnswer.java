@@ -22,6 +22,7 @@ public class CandidateAnswer implements Serializable {
     private String optionB;
     private String optionC;
     private String optionD;
+    private String imageUrl;
     private String candidateAnswer;
     private String correctAnswer;
     private BigDecimal score;
